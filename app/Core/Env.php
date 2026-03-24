@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // app/Core/Env.php
 class Env {
     public static function load(string $path): void {
@@ -16,6 +16,7 @@ class Env {
                 continue;
             }
             $value = trim($value, " \t\n\r\0\x0B\"");
+            putenv("{$key}={$value}");
             $_ENV[$key] = $value;
         }
     }
