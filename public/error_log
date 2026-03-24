@@ -1,0 +1,25 @@
+[30-Jan-2026 15:36:09 America/New_York] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'tjaechgob_tjaech_eval.cursos' doesn't exist
+[30-Jan-2026 15:36:19 America/New_York] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'tjaechgob_tjaech_eval.cursos' doesn't exist
+[30-Jan-2026 15:41:01 America/New_York] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'tjaechgob_tjaech_eval.cursos' doesn't exist
+[30-Jan-2026 15:41:12 America/New_York] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'tjaechgob_tjaech_eval.cursos' doesn't exist
+[30-Jan-2026 15:41:47 America/New_York] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'tjaechgob_tjaech_eval.cursos' doesn't exist
+[30-Jan-2026 15:42:05 America/New_York] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'tjaechgob_tjaech_eval.cursos' doesn't exist
+[03-Feb-2026 13:20:22 America/New_York] PHP Warning:  require(/home/tjaechgob/evaluaciones.tjaech.gob.mx/app/Core/../../config/mail.php): Failed to open stream: No such file or directory in /home/tjaechgob/evaluaciones.tjaech.gob.mx/app/Core/Mailer.php on line 5
+[03-Feb-2026 13:20:22 America/New_York] Failed opening required '/home/tjaechgob/evaluaciones.tjaech.gob.mx/app/Core/../../config/mail.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear')
+[03-Feb-2026 13:22:51 America/New_York] PHP Warning:  require(/home/tjaechgob/evaluaciones.tjaech.gob.mx/app/Core/../../config/mail.php): Failed to open stream: No such file or directory in /home/tjaechgob/evaluaciones.tjaech.gob.mx/app/Core/Mailer.php on line 5
+[03-Feb-2026 13:22:51 America/New_York] Failed opening required '/home/tjaechgob/evaluaciones.tjaech.gob.mx/app/Core/../../config/mail.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear')
+[03-Feb-2026 13:23:02 America/New_York] PHP Warning:  require(/home/tjaechgob/evaluaciones.tjaech.gob.mx/app/Core/../../config/mail.php): Failed to open stream: No such file or directory in /home/tjaechgob/evaluaciones.tjaech.gob.mx/app/Core/Mailer.php on line 5
+[03-Feb-2026 13:23:02 America/New_York] Failed opening required '/home/tjaechgob/evaluaciones.tjaech.gob.mx/app/Core/../../config/mail.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear')
+[03-Feb-2026 13:28:48 America/New_York] PHP Warning:  require(/home/tjaechgob/evaluaciones.tjaech.gob.mx/app/Core/../../config/mail.php): Failed to open stream: No such file or directory in /home/tjaechgob/evaluaciones.tjaech.gob.mx/app/Core/Mailer.php on line 5
+[03-Feb-2026 13:28:48 America/New_York] Failed opening required '/home/tjaechgob/evaluaciones.tjaech.gob.mx/app/Core/../../config/mail.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear')
+[03-Feb-2026 15:18:20 America/New_York] SQLSTATE[HY000]: General error: 1525 Incorrect DATE value: ''
+[03-Feb-2026 15:18:35 America/New_York] SQLSTATE[HY000]: General error: 1525 Incorrect DATE value: ''
+[03-Feb-2026 15:18:39 America/New_York] SQLSTATE[HY000]: General error: 1525 Incorrect DATE value: ''
+[03-Feb-2026 15:19:49 America/New_York] SQLSTATE[HY000]: General error: 1525 Incorrect DATE value: ''
+[05-Feb-2026 17:22:55 America/New_York] syntax error, unexpected end of file
+[05-Feb-2026 17:23:04 America/New_York] syntax error, unexpected end of file
+[05-Feb-2026 17:23:08 America/New_York] syntax error, unexpected end of file
+[05-Feb-2026 17:24:01 America/New_York] syntax error, unexpected end of file
+[05-Feb-2026 17:27:44 America/New_York] syntax error, unexpected end of file
+[05-Feb-2026 18:42:36 America/New_York] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'email' in 'field list'
+[05-Feb-2026 18:45:27 America/New_York] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'email' in 'field list'
