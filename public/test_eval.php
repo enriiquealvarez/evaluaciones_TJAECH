@@ -3,8 +3,16 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 echo "<h3>Diagnóstico Evaluaciones</h3>";
 
+$dotEnvPath = __DIR__ . '/../.env';
+if (!file_exists($dotEnvPath)) {
+    echo "❌ Archivo .env NO encontrado en: $dotEnvPath<br>";
+    exit;
+} else {
+    echo "✅ Archivo .env encontrado.<br>";
+}
+
 require_once __DIR__ . '/../app/Core/Env.php';
-\Env::load(__DIR__ . '/../.env');
+\Env::load($dotEnvPath);
 
 echo "DB_USER: " . (getenv('DB_USER') ?: 'NO DEFINIDO') . "<br>";
 echo "DB_NAME: " . (getenv('DB_NAME') ?: 'NO DEFINIDO') . "<br>";
