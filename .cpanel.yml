@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/tjaechgob/evaluaciones.tjaech.gob.mx/
+    - /bin/cp -R ./* $DEPLOYPATH
