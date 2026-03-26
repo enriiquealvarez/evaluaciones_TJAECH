@@ -225,7 +225,7 @@
                     <th>Curso</th>
                     <th>Nombre</th>
                     <th>Instituci&oacute;n</th>
-                    <th>Validado</th>
+                    <th>Asistencia</th>
                     <th>Acciones</th>
                 </tr>
 
@@ -252,7 +252,7 @@
                                 <input type="hidden" name="per_page" value="<?= (int)$perPage ?>">
                                 <input type="hidden" name="page" value="<?= (int)$page ?>">
                                 
-                                <button type="submit" class="btn <?= (int)$row['validado_evaluacion'] ? 'btn-success' : 'btn-secondary' ?> btn-xs btn-no-icon" 
+                                <button type="submit" class="btn <?= (int)$row['validado_evaluacion'] ? 'btn-success' : 'btn-danger' ?> btn-xs btn-no-icon" 
                                         style="padding: 2px 8px; font-size: 11px; min-width: 80px;">
                                     <?= (int)$row['validado_evaluacion'] ? 'VALIDADO' : 'PENDIENTE' ?>
                                 </button>
