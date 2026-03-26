@@ -119,6 +119,8 @@ $router->get('/admin/resultados/calificaciones', fn() => $results->scoreLookup()
 $router->post('/admin/resultados/calificaciones', fn() => $results->runScoreLookup());
 $router->get('/admin/inscripciones', fn() => $inscripciones->index());
 $router->post('/admin/inscripciones/eliminar', fn() => $inscripciones->delete());
+$router->post('/admin/inscripciones/validar', fn() => $inscripciones->toggleValidation());
+$router->post('/admin/inscripciones/validar-masivo', fn() => $inscripciones->bulkValidation());
 $router->get('/admin/satisfaccion', fn() => $satisfaccion->index());
 $router->get('/admin/satisfaccion/exportar', fn() => $satisfaccion->export());
 

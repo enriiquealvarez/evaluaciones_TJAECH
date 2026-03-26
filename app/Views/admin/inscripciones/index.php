@@ -74,6 +74,18 @@
                 </svg>
                 Exportar PDF demogr&aacute;fico
             </button>
+            <?php if ((int)$filters['curso_id'] > 0): ?>
+            <form method="post" action="<?= e(url('/admin/inscripciones/validar-masivo')) ?>" class="inline-form"
+                  data-confirm-title="Validación masiva"
+                  data-confirm="¿Deseas validar a TODOS los participantes registrados en este curso para que puedan realizar la evaluación?"
+                  data-confirm-ok="Sí, validar todos"
+                  data-confirm-color="#1b3f66">
+                <input type="hidden" name="_csrf" value="<?= e(CSRF::token()) ?>">
+                <input type="hidden" name="curso_id" value="<?= (int)$filters['curso_id'] ?>">
+                <input type="hidden" name="validado" value="1">
+                <button type="submit" class="btn btn-primary btn-no-icon">Validar todos (Curso)</button>
+            </form>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -213,8 +225,10 @@
                     <th>Curso</th>
                     <th>Nombre</th>
                     <th>Instituci&oacute;n</th>
+                    <th>Validado</th>
                     <th>Acciones</th>
                 </tr>
+
             </thead>
             <tbody>
                 <?php foreach ($inscripciones as $row): ?>
@@ -228,13 +242,31 @@
                         <td><?= e((string)$row['nombre_completo']) ?></td>
                         <td><?= e((string)$row['institucion']) ?></td>
                         <td>
+                            <form method="post" action="<?= e(url('/admin/inscripciones/validar')) ?>" class="inline-form">
+                                <input type="hidden" name="_csrf" value="<?= e(CSRF::token()) ?>">
+                                <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
+                                <input type="hidden" name="validado" value="<?= (int)$row['validado_evaluacion'] ? '0' : '1' ?>">
+                                <input type="hidden" name="curso_id" value="<?= e((string)$filters['curso_id']) ?>">
+                                <input type="hidden" name="q" value="<?= e((string)$filters['q']) ?>">
+                                <input type="hidden" name="search_in" value="<?= e((string)($filters['search_in'] ?? 'all')) ?>">
+                                <input type="hidden" name="per_page" value="<?= (int)$perPage ?>">
+                                <input type="hidden" name="page" value="<?= (int)$page ?>">
+                                
+                                <button type="submit" class="btn <?= (int)$row['validado_evaluacion'] ? 'btn-success' : 'btn-secondary' ?> btn-xs btn-no-icon" 
+                                        style="padding: 2px 8px; font-size: 11px; min-width: 80px;">
+                                    <?= (int)$row['validado_evaluacion'] ? 'VALIDADO' : 'PENDIENTE' ?>
+                                </button>
+                            </form>
+                        </td>
+                        <td>
                             <button type="button" class="btn btn-no-icon insc-expand-trigger" data-insc-expand-trigger data-insc-id="<?= (int)$row['id'] ?>" aria-expanded="false">
                                 Ver m&aacute;s
                             </button>
                         </td>
+
                     </tr>
                     <tr class="insc-expand-row" data-insc-expand-row data-insc-id="<?= (int)$row['id'] ?>" hidden>
-                        <td colspan="5">
+                        <td colspan="6">
                             <div class="insc-expand-panel">
                                 <p><strong>Edad:</strong> <?= (int)$row['edad'] ?> | <strong>G&eacute;nero:</strong> <?= e((string)$row['genero']) ?> | <strong>Correo:</strong> <?= e((string)$row['correo']) ?> | <strong>Tel&eacute;fono:</strong> <?= e((string)$row['telefono']) ?></p>
                                 <p><strong>Cargo/Puesto:</strong> <?= e((string)$row['cargo_puesto']) ?> | <strong>Grado:</strong> <?= e((string)$row['grado_estudios']) ?> | <strong>Otro grado:</strong> <?= e((string)$row['grado_otro'] ?: 'Ninguno') ?></p>

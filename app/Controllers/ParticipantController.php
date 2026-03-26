@@ -476,6 +476,8 @@ HTML;
         $inscripcion = InscripcionCurso::findByContacto($cursoId, $correo, $telefono);
         if (!$inscripcion) {
             $validator->required('registro', '', 'No encontramos un registro previo del curso con ese correo y teléfono.');
+        } elseif (!(int)($inscripcion['validado_evaluacion'] ?? 0)) {
+            $validator->required('registro', '', 'Su acceso a la evaluación aún no ha sido validado. Por favor, asegúrese de haber cumplido con los requisitos de asistencia.');
         }
 
         $preguntas = Pregunta::byEvaluacion($evaluacionId);
@@ -564,6 +566,15 @@ HTML;
                 'ok' => true,
                 'exists' => true,
                 'message' => 'No encontramos un registro previo del curso con ese correo y teléfono.'
+            ]);
+            return;
+        }
+
+        if (!(int)($inscripcion['validado_evaluacion'] ?? 0)) {
+            echo json_encode([
+                'ok' => true,
+                'exists' => true,
+                'message' => 'Su acceso a la evaluación aún no ha sido validado. Asegúrese de haber cumplido con la asistencia.'
             ]);
             return;
         }

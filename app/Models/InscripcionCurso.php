@@ -24,6 +24,7 @@ class InscripcionCurso {
                     grado_estudios VARCHAR(80) NOT NULL,
                     grado_otro VARCHAR(160) NULL,
                     colectivos_json TEXT NULL,
+                    validado_evaluacion TINYINT(1) NOT NULL DEFAULT 0,
                     created_at DATETIME NOT NULL,
                     FOREIGN KEY (curso_id) REFERENCES cursos(id) ON DELETE CASCADE,
                     UNIQUE KEY uk_inscripcion_curso_correo (curso_id, correo),
@@ -31,6 +32,12 @@ class InscripcionCurso {
                     INDEX idx_inscripciones_curso (curso_id)
                 ) ENGINE=InnoDB"
             );
+        } else {
+            // Ensure the validation column exists
+            $stmt = $pdo->query("SHOW COLUMNS FROM inscripciones_curso LIKE 'validado_evaluacion'");
+            if (!$stmt->fetch()) {
+                $pdo->exec("ALTER TABLE inscripciones_curso ADD COLUMN validado_evaluacion TINYINT(1) NOT NULL DEFAULT 0 AFTER colectivos_json");
+            }
         }
 
         $ready = true;
@@ -42,8 +49,8 @@ class InscripcionCurso {
         $stmt = DB::conn()->prepare(
             'INSERT INTO inscripciones_curso (
                 curso_id, nombre_completo, edad, genero, correo, telefono, institucion,
-                cargo_puesto, grado_estudios, grado_otro, colectivos_json, created_at
-            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,NOW())'
+                cargo_puesto, grado_estudios, grado_otro, colectivos_json, validado_evaluacion, created_at
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,0,NOW())'
         );
         $stmt->execute([
             $data['curso_id'],
@@ -193,6 +200,20 @@ class InscripcionCurso {
         $stmt = DB::conn()->prepare('DELETE FROM inscripciones_curso WHERE id = ?');
         $stmt->execute([$id]);
         return $stmt->rowCount() > 0;
+    }
+
+    public static function setValidation(int $id, int $valid): bool {
+        self::ensureTable();
+        $stmt = DB::conn()->prepare('UPDATE inscripciones_curso SET validado_evaluacion = ? WHERE id = ?');
+        $stmt->execute([$valid, $id]);
+        return $stmt->rowCount() > 0;
+    }
+
+    public static function setBulkValidation(int $cursoId, int $valid): int {
+        self::ensureTable();
+        $stmt = DB::conn()->prepare('UPDATE inscripciones_curso SET validado_evaluacion = ? WHERE curso_id = ?');
+        $stmt->execute([$valid, $cursoId]);
+        return $stmt->rowCount();
     }
 
     public static function dashboardStats(array $rows): array {

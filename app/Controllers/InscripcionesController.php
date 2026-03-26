@@ -62,6 +62,46 @@ class InscripcionesController extends BaseController {
         $this->redirectToIndex();
     }
 
+    public function toggleValidation(): void {
+        AuthMiddleware::requireRole('results');
+
+        if (!CSRF::validate($_POST['_csrf'] ?? null)) {
+            Session::flash('error', 'Token inválido.');
+            $this->redirectToIndex();
+        }
+
+        $id = (int)($_POST['id'] ?? 0);
+        $valid = (int)($_POST['validado'] ?? 0);
+
+        if ($id > 0) {
+            InscripcionCurso::setValidation($id, $valid);
+            Session::flash('success', $valid ? 'Participante validado para evaluación.' : 'Validación revocada.');
+        }
+
+        $this->redirectToIndex();
+    }
+
+    public function bulkValidation(): void {
+        AuthMiddleware::requireRole('results');
+
+        if (!CSRF::validate($_POST['_csrf'] ?? null)) {
+            Session::flash('error', 'Token inválido.');
+            $this->redirectToIndex();
+        }
+
+        $cursoId = (int)($_POST['curso_id'] ?? 0);
+        $valid = (int)($_POST['validado'] ?? 0);
+
+        if ($cursoId > 0) {
+            $count = InscripcionCurso::setBulkValidation($cursoId, $valid);
+            Session::flash('success', "Se han actualizado {$count} participantes.");
+        } else {
+            Session::flash('error', 'Debe seleccionar un curso para la validación masiva.');
+        }
+
+        $this->redirectToIndex();
+    }
+
     private function redirectToIndex(): void {
         $params = [];
 
