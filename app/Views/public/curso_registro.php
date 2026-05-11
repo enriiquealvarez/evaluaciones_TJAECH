@@ -750,9 +750,9 @@ $colectivos = [
 
             <div class="actions">
                 <div class="privacy-note" style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="privacy-checkbox" name="aviso_privacidad" required disabled style="margin: 0; cursor: not-allowed; width: 18px; height: 18px; flex-shrink: 0;">
-                    <label for="privacy-checkbox" style="margin: 0; font-size: 14px; color: #111426; font-weight: normal; cursor: pointer; display: inline-block;">
-                        He le&iacute;do y acepto el <a href="#" id="privacy-link" style="color: #2b5c8f; text-decoration: underline; font-weight: 600; display: inline;">Aviso de Privacidad</a>*
+                    <input type="checkbox" id="privacy-checkbox" name="aviso_privacidad" required style="margin: 0; cursor: not-allowed; width: 18px; height: 18px; flex-shrink: 0;" onclick="return false;" onkeydown="return false;">
+                    <label for="privacy-checkbox" style="margin: 0; font-size: 14px; color: #111426; font-weight: normal; display: inline-block; cursor: default;">
+                        He le&iacute;do y acepto el <a href="#" id="privacy-link" style="color: #2b5c8f !important; text-decoration: underline !important; font-weight: 600 !important; display: inline-block !important; border: none !important; padding: 0 !important; background: transparent !important; box-shadow: none !important; outline: none !important;">Aviso de Privacidad</a>*
                     </label>
                 </div>
                 <p class="hint" style="margin-top: 4px; font-size: 0.85em; margin-left: 26px;">(Debe abrir el aviso de privacidad para poder aceptar y enviar su registro).</p>
@@ -955,18 +955,41 @@ document.addEventListener('DOMContentLoaded', function () {
     privacyLink.addEventListener('click', function(e) {
       e.preventDefault();
       if (typeof Swal !== 'undefined') {
+        let timerInterval;
+        let timeLeft = 5;
+
         Swal.fire({
           title: 'Aviso de Privacidad',
           html: '<iframe src="https://docs.google.com/gview?url=https://transparencia.tjaech.gob.mx/avisos_privacidad/APS-ACCIONES-CAPACITACION-IJA.pdf&embedded=true" style="width: 100%; height: 65vh; border: none; border-radius: 4px;"></iframe>',
           width: '800px',
           showCloseButton: true,
-          confirmButtonText: 'He leído y acepto',
+          confirmButtonText: 'He leído y acepto (' + timeLeft + 's)',
           confirmButtonColor: '#2b5c8f',
           cancelButtonText: 'Cerrar',
-          showCancelButton: true
+          showCancelButton: true,
+          didOpen: () => {
+            const confirmBtn = Swal.getConfirmButton();
+            confirmBtn.disabled = true;
+            confirmBtn.style.opacity = '0.5';
+            confirmBtn.style.cursor = 'not-allowed';
+            
+            timerInterval = setInterval(() => {
+              timeLeft -= 1;
+              if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                confirmBtn.disabled = false;
+                confirmBtn.style.opacity = '1';
+                confirmBtn.style.cursor = 'pointer';
+                confirmBtn.textContent = 'He leído y acepto';
+              } else {
+                confirmBtn.textContent = 'He leído y acepto (' + timeLeft + 's)';
+              }
+            }, 1000);
+          },
+          willClose: () => {
+            clearInterval(timerInterval);
+          }
         }).then((result) => {
-          privacyCheckbox.disabled = false;
-          privacyCheckbox.style.cursor = 'pointer';
           if (result.isConfirmed) {
             privacyCheckbox.checked = true;
             submitBtn.disabled = false;
@@ -976,21 +999,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       } else {
         window.open('https://transparencia.tjaech.gob.mx/avisos_privacidad/APS-ACCIONES-CAPACITACION-IJA.pdf', '_blank');
-        privacyCheckbox.disabled = false;
-        privacyCheckbox.style.cursor = 'pointer';
+        setTimeout(function() {
+            privacyCheckbox.checked = true;
+            submitBtn.disabled = false;
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.style.opacity = '1';
+        }, 5000);
       }
     });
 
-    privacyCheckbox.addEventListener('change', function() {
-      if (this.checked) {
-        submitBtn.disabled = false;
-        submitBtn.style.cursor = 'pointer';
-        submitBtn.style.opacity = '1';
-      } else {
-        submitBtn.disabled = true;
-        submitBtn.style.cursor = 'not-allowed';
-        submitBtn.style.opacity = '0.6';
-      }
+    // Make sure manual clicks don't change state if somehow they bypass readonly
+    privacyCheckbox.addEventListener('click', function(e) {
+      e.preventDefault();
+      return false;
     });
   }
 });
