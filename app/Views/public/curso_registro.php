@@ -960,7 +960,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         Swal.fire({
           title: 'Aviso de Privacidad',
-          html: '<iframe src="https://docs.google.com/gview?url=https://transparencia.tjaech.gob.mx/avisos_privacidad/APS-ACCIONES-CAPACITACION-IJA.pdf&embedded=true" style="width: 100%; height: 65vh; border: none; border-radius: 4px;"></iframe>',
+          html: '<iframe src="https://transparencia.tjaech.gob.mx/avisos_privacidad/APS-ACCIONES-CAPACITACION-IJA.pdf" style="width: 100%; height: 65vh; border: none; border-radius: 4px;"></iframe>',
           width: '800px',
           showCloseButton: true,
           confirmButtonText: 'He leído y acepto (' + timeLeft + 's)',

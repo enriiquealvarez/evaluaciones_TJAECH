@@ -75,3 +75,31 @@
 #5 C:\laragon\www\evaluaciones.tjaech.gob.mx\app\Core\Router.php(27): {closure}()
 #6 C:\laragon\www\evaluaciones.tjaech.gob.mx\public\index.php(132): Router->dispatch('GET', '/')
 #7 {main}
+[11-May-2026 19:58:15 UTC] SMTP error expected 250: 550-The mail server could not deliver mail to admin@example.com.  The account
+550-or domain may not exist, they may be blacklisted, or missing the proper dns
+550 entries.
+
+[11-May-2026 19:59:10 UTC] SMTP error expected 250: 550-The mail server could not deliver mail to admin2@example.com.  The account
+550-or domain may not exist, they may be blacklisted, or missing the proper dns
+550 entries.
+
+[11-May-2026 20:02:20 UTC] SMTP error expected 250: 550-The mail server could not deliver mail to admin2@example.com.  The account
+550-or domain may not exist, they may be blacklisted, or missing the proper dns
+550 entries.
+
+[11-May-2026 20:06:17 UTC] SMTP error expected 250: 550-The mail server could not deliver mail to admin2@example.com.  The account
+550-or domain may not exist, they may be blacklisted, or missing the proper dns
+550 entries.
+
+[11-May-2026 20:09:06 UTC] SMTP error expected 250: 550-The mail server could not deliver mail to admin3@example.com.  The account
+550-or domain may not exist, they may be blacklisted, or missing the proper dns
+550 entries.
+
+[11-May-2026 20:29:06 UTC] SMTP error expected 250: 550-The mail server could not deliver mail to admin4@example.com.  The account
+550-or domain may not exist, they may be blacklisted, or missing the proper dns
+550 entries.
+
+[11-May-2026 20:44:00 UTC] SMTP error expected 250: 550-The mail server could not deliver mail to admin5@example.com.  The account
+550-or domain may not exist, they may be blacklisted, or missing the proper dns
+550 entries.
+
