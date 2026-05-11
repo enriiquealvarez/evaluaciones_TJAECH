@@ -749,18 +749,16 @@ $colectivos = [
             </div>
 
             <div class="actions">
-                <div class="privacy-note">
-                    <span class="privacy-note-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <rect x="5" y="11" width="14" height="10" rx="2"></rect>
-                            <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
-                        </svg>
-                    </span>
-                    <span>Sus datos est&aacute;n protegidos por nuestra pol&iacute;tica de privacidad.</span>
+                <div class="privacy-note" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="privacy-checkbox" name="aviso_privacidad" required disabled style="margin: 0; cursor: not-allowed; width: 18px; height: 18px; flex-shrink: 0;">
+                    <label for="privacy-checkbox" style="margin: 0; font-size: 14px; color: #111426; font-weight: normal; cursor: pointer; display: inline-block;">
+                        He le&iacute;do y acepto el <a href="#" id="privacy-link" style="color: #2b5c8f; text-decoration: underline; font-weight: 600; display: inline;">Aviso de Privacidad</a>*
+                    </label>
                 </div>
+                <p class="hint" style="margin-top: 4px; font-size: 0.85em; margin-left: 26px;">(Debe abrir el aviso de privacidad para poder aceptar y enviar su registro).</p>
 
-                <div class="action-buttons">
-                    <button type="submit" class="btn btn-primary">Enviar registro</button>
+                <div class="action-buttons" style="margin-top: 16px;">
+                    <button type="submit" id="submit-btn" class="btn btn-primary" disabled style="cursor: not-allowed; opacity: 0.6;">Enviar registro</button>
                 </div>
             </div>
 
@@ -948,5 +946,52 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
   });
+
+  var privacyLink = document.getElementById('privacy-link');
+  var privacyCheckbox = document.getElementById('privacy-checkbox');
+  var submitBtn = document.getElementById('submit-btn');
+
+  if (privacyLink && privacyCheckbox && submitBtn) {
+    privacyLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: 'Aviso de Privacidad',
+          html: '<iframe src="https://docs.google.com/gview?url=https://transparencia.tjaech.gob.mx/avisos_privacidad/APS-ACCIONES-CAPACITACION-IJA.pdf&embedded=true" style="width: 100%; height: 65vh; border: none; border-radius: 4px;"></iframe>',
+          width: '800px',
+          showCloseButton: true,
+          confirmButtonText: 'He leído y acepto',
+          confirmButtonColor: '#2b5c8f',
+          cancelButtonText: 'Cerrar',
+          showCancelButton: true
+        }).then((result) => {
+          privacyCheckbox.disabled = false;
+          privacyCheckbox.style.cursor = 'pointer';
+          if (result.isConfirmed) {
+            privacyCheckbox.checked = true;
+            submitBtn.disabled = false;
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.style.opacity = '1';
+          }
+        });
+      } else {
+        window.open('https://transparencia.tjaech.gob.mx/avisos_privacidad/APS-ACCIONES-CAPACITACION-IJA.pdf', '_blank');
+        privacyCheckbox.disabled = false;
+        privacyCheckbox.style.cursor = 'pointer';
+      }
+    });
+
+    privacyCheckbox.addEventListener('change', function() {
+      if (this.checked) {
+        submitBtn.disabled = false;
+        submitBtn.style.cursor = 'pointer';
+        submitBtn.style.opacity = '1';
+      } else {
+        submitBtn.disabled = true;
+        submitBtn.style.cursor = 'not-allowed';
+        submitBtn.style.opacity = '0.6';
+      }
+    });
+  }
 });
 </script>
