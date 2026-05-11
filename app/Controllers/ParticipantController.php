@@ -240,7 +240,7 @@ class ParticipantController extends BaseController {
             'canGoEvaluation' => $canGoEvaluation,
             'cupoLleno' => $cupoLleno,
             'institutionOptions' => self::COURSE_REGISTRATION_INSTITUTIONS,
-            'participantGuideUrl' => asset(self::PARTICIPANT_GUIDE_RELATIVE_PATH),
+            'participantGuideUrl' => asset(self::PARTICIPANT_GUIDE_RELATIVE_PATH) . '?v=' . time(),
             'errors' => Session::flash('errors') ?? [],
             'old' => Session::flash('old') ?? [],
             'error' => Session::flash('error'),
