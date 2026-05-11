@@ -127,6 +127,10 @@ class Mailer {
             $text = strip_tags($html);
         }
 
+        // Strict RFC 5322 line endings to prevent line length limits (> 998 bytes)
+        $text = preg_replace("/\r\n|\r|\n/", "\r\n", $text);
+        $html = preg_replace("/\r\n|\r|\n/", "\r\n", $html);
+
         $headers = [];
         $headers[] = "From: {$fromName} <{$fromEmail}>";
         if ($fromEmail !== $senderEmail) {
