@@ -604,7 +604,7 @@ $colectivos = [
                     <div><?= e($success) ?></div>
                     <?php if (!empty($participantGuideUrl)): ?>
                         <div style="margin-top:12px;">
-                            <a href="<?= e($participantGuideUrl) ?>" class="btn btn-secondary" target="_blank" rel="noopener">Descargar indicaciones para participantes</a>
+                            <a href="<?= e($participantGuideUrl) ?>" class="btn btn-secondary" target="_blank" rel="noopener">Descargar indicaciones y recomendaciones para participantes</a>
                         </div>
                     <?php endif; ?>
                 </div>

@@ -348,7 +348,7 @@ class ParticipantController extends BaseController {
 
         $this->sendParticipantRegistrationEmail($nombre, $correo, $curso, $telefono);
 
-        Session::flash('success', 'Registro al curso completado. Las indicaciones, requisitos y recomendaciones del programa de capacitacion fueron enviadas a su correo electronico. Cuando el curso tenga evaluacion activa, podra ingresar con su correo y telefono.');
+        Session::flash('success', 'Registro al curso completado, las indicaciones y recomendaciones del curso fueron enviadas a su correo electrónico. Cuando el Curso tenga evaluación, podrá ingresar con su correo y número telefónico.');
         redirect('/curso/registro?curso_id=' . $cursoId);
     }
 
