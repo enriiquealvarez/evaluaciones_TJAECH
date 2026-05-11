@@ -36,7 +36,9 @@ class CourseController extends BaseController {
             'descripcion' => trim($_POST['descripcion'] ?? ''),
             'fecha_inicio' => $_POST['fecha_inicio'] ?: null,
             'fecha_fin' => $_POST['fecha_fin'] ?: null,
-            'activo' => isset($_POST['activo']) ? 1 : 0
+            'activo' => isset($_POST['activo']) ? 1 : 0,
+            'tiene_cupo' => isset($_POST['tiene_cupo']) ? 1 : 0,
+            'cupo_maximo' => (int)($_POST['cupo_maximo'] ?? 0)
         ]);
         Session::flash('success', 'Curso creado.');
         redirect('/admin/cursos');
@@ -75,7 +77,9 @@ class CourseController extends BaseController {
             'descripcion' => trim($_POST['descripcion'] ?? ''),
             'fecha_inicio' => $_POST['fecha_inicio'] ?: null,
             'fecha_fin' => $_POST['fecha_fin'] ?: null,
-            'activo' => isset($_POST['activo']) ? 1 : 0
+            'activo' => isset($_POST['activo']) ? 1 : 0,
+            'tiene_cupo' => isset($_POST['tiene_cupo']) ? 1 : 0,
+            'cupo_maximo' => (int)($_POST['cupo_maximo'] ?? 0)
         ]);
         Session::flash('success', 'Curso actualizado.');
         redirect('/admin/cursos');

@@ -595,10 +595,52 @@ $colectivos = [
 
 <section class="course-registration-classic">
     <div class="wrap">
-        <p class="kicker">Registro de programas de capacitaci&oacute;n</p>
+        <p class="kicker">REGISTRO AL CURSO</p>
         <h1 class="hero-title">&quot;<?= e($courseTitle) ?>&quot;</h1>
-        <p class="hero-copy">Complete su registro previo. Una vez habilitada la evaluaci&oacute;n del curso, podr&aacute; ingresar con su correo y tel&eacute;fono.</p>
 
+        <div class="alerts" style="margin-top: 32px; max-width: 760px;">
+            <?php if (!empty($success)): ?>
+                <div class="alert alert-green">
+                    <div><?= e($success) ?></div>
+                    <?php if (!empty($participantGuideUrl)): ?>
+                        <div style="margin-top:12px;">
+                            <a href="<?= e($participantGuideUrl) ?>" class="btn btn-secondary" target="_blank" rel="noopener">Descargar indicaciones para participantes</a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($errors)): ?>
+                <div class="alert alert-magenta">
+                    <strong>Revise la informaci&oacute;n:</strong>
+                    <ul>
+                        <?php foreach ($errors as $err): ?>
+                        <li><?= e($err) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($error)): ?>
+                <div class="alert alert-magenta"><?= e($error) ?></div>
+            <?php endif; ?>
+        </div>
+
+        <?php if (!empty($cupoLleno)): ?>
+            <?php if (empty($success)): ?>
+            <div style="margin-top: 40px; padding: 40px; border-radius: 24px; background: #fff; box-shadow: 0 24px 48px rgba(148, 163, 184, 0.16); text-align: center;">
+                <h2 style="color: #1e3a8a; margin-top: 0;">Cupo Lleno</h2>
+                <p style="color: #475569; font-size: 1.1rem; line-height: 1.5;">Lo sentimos, el l&iacute;mite de registros para este curso se ha alcanzado. Agradecemos su inter&eacute;s.</p>
+                <div style="margin-top: 32px;">
+                    <a href="<?= e(url('/')) ?>" class="btn btn-primary" style="text-decoration: none;">Volver al inicio</a>
+                </div>
+            </div>
+            <?php else: ?>
+            <div style="margin-top: 32px; text-align: center;">
+                <a href="<?= e(url('/')) ?>" class="btn btn-primary" style="text-decoration: none;">Volver al inicio</a>
+            </div>
+            <?php endif; ?>
+        <?php else: ?>
         <form method="post" action="<?= e(url('/curso/registrar')) ?>">
             <input type="hidden" name="_csrf" value="<?= e(CSRF::token()) ?>">
             <input type="hidden" name="curso_id" value="<?= (int)$curso['id'] ?>">
@@ -609,34 +651,6 @@ $colectivos = [
                     <h3>Registro al curso</h3>
                     <p>Todos los campos marcados con (*) son obligatorios</p>
                 </div>
-            </div>
-
-            <div class="alerts">
-                <?php if (!empty($success)): ?>
-                    <div class="alert alert-green">
-                        <div><?= e($success) ?></div>
-                        <?php if (!empty($participantGuideUrl)): ?>
-                            <div style="margin-top:12px;">
-                                <a href="<?= e($participantGuideUrl) ?>" class="btn btn-secondary" target="_blank" rel="noopener">Descargar indicaciones para participantes</a>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (!empty($errors)): ?>
-                    <div class="alert alert-magenta">
-                        <strong>Revise la informaci&oacute;n:</strong>
-                        <ul>
-                            <?php foreach ($errors as $err): ?>
-                            <li><?= e($err) ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (!empty($error)): ?>
-                    <div class="alert alert-magenta"><?= e($error) ?></div>
-                <?php endif; ?>
             </div>
 
             <div class="form-grid">
@@ -672,7 +686,7 @@ $colectivos = [
                     <input type="email" name="correo" required value="<?= e($old['correo'] ?? '') ?>" placeholder="ejemplo@correo.com">
                 </label>
 
-                <label class="field span-12">
+                <label class="field span-6" id="institucion-container">
                     <span class="field-label">Institución a la que pertenece*</span>
                     <div class="institution-combobox" data-institution-combobox>
                         <input type="hidden" name="institucion" value="<?= e($institucionOld) ?>" data-institution-value>
@@ -687,12 +701,17 @@ $colectivos = [
                         >
                         <div class="institution-results" data-institution-results hidden></div>
                     </div>
-                    <p class="hint">Debe seleccionar una institución o ayuntamiento del listado autorizado que aparecerá al escribir.</p>
+                    <p class="hint">Debe seleccionar una opción del listado autorizado que aparecerá al escribir.</p>
+                </label>
+
+                <label class="field span-6" id="institucion-otra-container" style="<?= $institucionOld === 'Otro' ? '' : 'display: none;' ?>">
+                    <span class="field-label">Especifique*</span>
+                    <input type="text" name="institucion_otra" id="institucion-otra-input" value="<?= e($old['institucion_otra'] ?? '') ?>" placeholder="Escriba su institución">
                 </label>
 
                 <label class="field span-12">
-                    <span class="field-label">Cargo o puesto que desempeña*</span>
-                    <input type="text" name="cargo_puesto" required value="<?= e($old['cargo_puesto'] ?? '') ?>" placeholder="Su cargo actual">
+                    <span class="field-label">Cargo o puesto que desempeña</span>
+                    <input type="text" name="cargo_puesto" value="<?= e($old['cargo_puesto'] ?? '') ?>" placeholder="Su cargo actual">
                 </label>
 
                 <label class="field span-6">
@@ -741,24 +760,17 @@ $colectivos = [
                 </div>
 
                 <div class="action-buttons">
-                    <?php if (!empty($canGoEvaluation)): ?>
-                        <a href="<?= e(url('/participante/registro?curso_id=' . (int)$curso['id'])) ?>" class="btn btn-secondary">Ir a evaluaci&oacute;n</a>
-                    <?php else: ?>
-                        <button type="button" class="btn btn-secondary" disabled title="Primero complete y env&iacute;e su registro.">Ir a evaluaci&oacute;n</button>
-                    <?php endif; ?>
                     <button type="submit" class="btn btn-primary">Enviar registro</button>
                 </div>
             </div>
 
             <div class="notes">
-                <?php if (empty($canGoEvaluation)): ?>
-                    <p class="note">El bot&oacute;n &quot;Ir a evaluaci&oacute;n&quot; se habilita despu&eacute;s de registrar correctamente sus datos.</p>
-                <?php endif; ?>
                 <?php if (!empty($participantGuideUrl)): ?>
-                    <p class="note">Al completar el registro, recibir&aacute; por correo este documento con indicaciones y tambi&eacute;n podr&aacute; descargarlo desde esta pantalla.</p>
+                    <p class="note">Al completar el registro, recibir&aacute; por correo electr&oacute;nico las indicaciones y recomendaciones del curso.</p>
                 <?php endif; ?>
             </div>
         </form>
+        <?php endif; ?>
     </div>
 </section>
 
@@ -796,6 +808,19 @@ document.addEventListener('DOMContentLoaded', function () {
       searchInput.value = value;
       searchInput.setCustomValidity('');
       closeResults();
+      
+      var institucionOtraContainer = document.getElementById('institucion-otra-container');
+      var institucionOtraInput = document.getElementById('institucion-otra-input');
+      if (institucionOtraContainer && institucionOtraInput) {
+        if (value === 'Otro') {
+          institucionOtraContainer.style.display = '';
+          institucionOtraInput.required = true;
+        } else {
+          institucionOtraContainer.style.display = 'none';
+          institucionOtraInput.required = false;
+          institucionOtraInput.value = '';
+        }
+      }
     };
 
     var buildOption = function (value, index) {

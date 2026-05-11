@@ -240,7 +240,7 @@
                         <td><?= e((string)$row['created_at']) ?></td>
                         <td><?= e((string)$row['curso_nombre']) ?></td>
                         <td><?= e((string)$row['nombre_completo']) ?></td>
-                        <td><?= e((string)$row['institucion']) ?></td>
+                        <td><?= e($row['institucion'] === 'Otro' && !empty($row['institucion_otra']) ? 'Otro (' . $row['institucion_otra'] . ')' : (string)$row['institucion']) ?></td>
                         <td>
                             <form method="post" action="<?= e(url('/admin/inscripciones/validar')) ?>" class="inline-form">
                                 <input type="hidden" name="_csrf" value="<?= e(CSRF::token()) ?>">

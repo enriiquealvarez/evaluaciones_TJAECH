@@ -38,6 +38,10 @@ class InscripcionCurso {
             if (!$stmt->fetch()) {
                 $pdo->exec("ALTER TABLE inscripciones_curso ADD COLUMN validado_evaluacion TINYINT(1) NOT NULL DEFAULT 0 AFTER colectivos_json");
             }
+            $stmt2 = $pdo->query("SHOW COLUMNS FROM inscripciones_curso LIKE 'institucion_otra'");
+            if (!$stmt2->fetch()) {
+                $pdo->exec("ALTER TABLE inscripciones_curso ADD COLUMN institucion_otra VARCHAR(200) NULL AFTER institucion");
+            }
         }
 
         $ready = true;
@@ -48,9 +52,9 @@ class InscripcionCurso {
 
         $stmt = DB::conn()->prepare(
             'INSERT INTO inscripciones_curso (
-                curso_id, nombre_completo, edad, genero, correo, telefono, institucion,
+                curso_id, nombre_completo, edad, genero, correo, telefono, institucion, institucion_otra,
                 cargo_puesto, grado_estudios, grado_otro, colectivos_json, validado_evaluacion, created_at
-            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,0,NOW())'
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,0,NOW())'
         );
         $stmt->execute([
             $data['curso_id'],
@@ -59,9 +63,10 @@ class InscripcionCurso {
             $data['genero'],
             $data['correo'],
             $data['telefono'],
-            $data['institucion'],
-            $data['cargo_puesto'],
-            $data['grado_estudios'],
+                $data['institucion'],
+                $data['institucion_otra'] ?? '',
+                $data['cargo_puesto'],
+                $data['grado_estudios'],
             $data['grado_otro'],
             $data['colectivos_json']
         ]);
@@ -186,6 +191,15 @@ class InscripcionCurso {
         [$baseSql, $params] = self::buildFilterQuery($filters);
         $stmt = DB::conn()->prepare('SELECT COUNT(*) AS total ' . $baseSql);
         $stmt->execute($params);
+        $row = $stmt->fetch();
+        return (int)($row['total'] ?? 0);
+    }
+
+    public static function countByCurso(int $cursoId): int {
+        self::ensureTable();
+        if ($cursoId <= 0) return 0;
+        $stmt = DB::conn()->prepare('SELECT COUNT(*) AS total FROM inscripciones_curso WHERE curso_id = ?');
+        $stmt->execute([$cursoId]);
         $row = $stmt->fetch();
         return (int)($row['total'] ?? 0);
     }

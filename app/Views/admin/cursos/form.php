@@ -1,4 +1,4 @@
-﻿<section class="container">
+<section class="container">
     <div class="page-header">
         <h2><?= $curso ? 'Editar curso' : 'Nuevo curso' ?></h2>
     </div>
@@ -34,9 +34,32 @@
             <input type="checkbox" name="activo" <?= (int)($old['activo'] ?? ($curso['activo'] ?? 1)) === 1 ? 'checked' : '' ?>>
             Curso activo
         </label>
+        
+        <label class="checkbox">
+            <input type="checkbox" name="tiene_cupo" id="tiene_cupo" <?= (int)($old['tiene_cupo'] ?? ($curso['tiene_cupo'] ?? 0)) === 1 ? 'checked' : '' ?>>
+            Limitar número de registros
+        </label>
+        <label id="cupo_maximo_container" style="<?= (int)($old['tiene_cupo'] ?? ($curso['tiene_cupo'] ?? 0)) === 1 ? '' : 'display: none;' ?>">
+            Número máximo de registros
+            <input type="number" name="cupo_maximo" min="1" value="<?= e($old['cupo_maximo'] ?? ($curso['cupo_maximo'] ?? '')) ?>">
+        </label>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Guardar</button>
             <a class="btn btn-secondary" href="<?= e(url('/admin/cursos')) ?>">Cancelar</a>
         </div>
     </form>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var checkbox = document.getElementById('tiene_cupo');
+    var container = document.getElementById('cupo_maximo_container');
+    
+    if (checkbox && container) {
+        checkbox.addEventListener('change', function() {
+            container.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+});
+</script>

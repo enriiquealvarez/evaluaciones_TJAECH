@@ -209,7 +209,11 @@ class ParticipantController extends BaseController {
         'Auditoría Superior del Estado de Chiapas',
         'Congreso del Estado de Chiapas',
         'Tribunal Superior de Justicia del Estado de Chiapas',
-        'Consejo de la Judicatura del Estado de Chiapas'
+        'Consejo de la Judicatura del Estado de Chiapas',
+        'Público en General',
+        'Estudiante',
+        'No aplica',
+        'Otro'
         ];
 
     public function showCourseRegistration(): void {
@@ -222,9 +226,19 @@ class ParticipantController extends BaseController {
 
         $canGoEvaluation = (int)Session::get('ready_evaluacion_curso_' . $cursoId, 0) === 1;
 
+        $cupoLleno = false;
+        if ((int)($curso['tiene_cupo'] ?? 0) === 1) {
+            $inscritos = InscripcionCurso::countByCurso($cursoId);
+            $cupoMaximo = (int)($curso['cupo_maximo'] ?? 0);
+            if ($inscritos >= $cupoMaximo && $cupoMaximo > 0) {
+                $cupoLleno = true;
+            }
+        }
+
         $this->render('public/curso_registro', [
             'curso' => $curso,
             'canGoEvaluation' => $canGoEvaluation,
+            'cupoLleno' => $cupoLleno,
             'institutionOptions' => self::COURSE_REGISTRATION_INSTITUTIONS,
             'participantGuideUrl' => asset(self::PARTICIPANT_GUIDE_RELATIVE_PATH),
             'errors' => Session::flash('errors') ?? [],
@@ -247,12 +261,22 @@ class ParticipantController extends BaseController {
             redirect('/');
         }
 
+        if ((int)($curso['tiene_cupo'] ?? 0) === 1) {
+            $inscritos = InscripcionCurso::countByCurso($cursoId);
+            $cupoMaximo = (int)($curso['cupo_maximo'] ?? 0);
+            if ($inscritos >= $cupoMaximo && $cupoMaximo > 0) {
+                Session::flash('error', 'El cupo máximo para este curso se ha agotado.');
+                redirect('/curso/registro?curso_id=' . $cursoId);
+            }
+        }
+
         $nombre = trim($_POST['nombre_completo'] ?? '');
         $edad = (int)($_POST['edad'] ?? 0);
         $genero = trim($_POST['genero'] ?? '');
         $correo = mb_strtolower(trim($_POST['correo'] ?? ''));
         $telefono = preg_replace('/\D+/', '', (string)($_POST['telefono'] ?? ''));
         $institucion = trim($_POST['institucion'] ?? '');
+        $institucionOtra = trim($_POST['institucion_otra'] ?? '');
         $cargo = trim($_POST['cargo_puesto'] ?? '');
         $grado = trim($_POST['grado_estudios'] ?? '');
         $gradoOtro = trim($_POST['grado_otro'] ?? '');
@@ -283,7 +307,10 @@ class ParticipantController extends BaseController {
         if ($institucion !== '' && !in_array($institucion, self::COURSE_REGISTRATION_INSTITUTIONS, true)) {
             $validator->required('institucion', '', 'Seleccione una institucion o ayuntamiento de la lista autorizada.');
         }
-        $validator->required('cargo_puesto', $cargo, 'El cargo o puesto es obligatorio.');
+        if ($institucion === 'Otro') {
+            $validator->required('institucion_otra', $institucionOtra, 'Especifique su institución.');
+        }
+        // $validator->required('cargo_puesto', $cargo, 'El cargo o puesto es obligatorio.');
         if (!in_array($grado, $gradosValidos, true)) {
             $validator->required('grado_estudios', '', 'Seleccione el último grado de estudios.');
         }
@@ -312,6 +339,7 @@ class ParticipantController extends BaseController {
             'correo' => $correo,
             'telefono' => $telefono,
             'institucion' => $institucion,
+            'institucion_otra' => $institucion === 'Otro' ? $institucionOtra : '',
             'cargo_puesto' => $cargo,
             'grado_estudios' => $grado,
             'grado_otro' => $grado === 'Otro' ? $gradoOtro : '',
@@ -320,7 +348,6 @@ class ParticipantController extends BaseController {
 
         $this->sendParticipantRegistrationEmail($nombre, $correo, $curso, $telefono);
 
-        Session::set('ready_evaluacion_curso_' . $cursoId, 1);
         Session::flash('success', 'Registro al curso completado. Las indicaciones, requisitos y recomendaciones del programa de capacitacion fueron enviadas a su correo electronico. Cuando el curso tenga evaluacion activa, podra ingresar con su correo y telefono.');
         redirect('/curso/registro?curso_id=' . $cursoId);
     }

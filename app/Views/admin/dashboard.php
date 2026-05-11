@@ -100,7 +100,7 @@
 
     <div class="dashboard-main-grid">
         <section class="card dashboard-list-card">
-            <h3>Últimos registros</h3>
+            <h3>Últimas evaluaciones</h3>
             <table class="table dashboard-table-modern">
                 <thead>
                     <tr>

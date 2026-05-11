@@ -12,6 +12,12 @@ class Curso {
             DB::conn()->exec("ALTER TABLE cursos ADD COLUMN terminado TINYINT(1) NOT NULL DEFAULT 0 AFTER activo");
         }
 
+        $colCupo = DB::conn()->query("SHOW COLUMNS FROM cursos LIKE 'tiene_cupo'")->fetch();
+        if (!$colCupo) {
+            DB::conn()->exec("ALTER TABLE cursos ADD COLUMN tiene_cupo TINYINT(1) NOT NULL DEFAULT 0 AFTER terminado");
+            DB::conn()->exec("ALTER TABLE cursos ADD COLUMN cupo_maximo INT NOT NULL DEFAULT 0 AFTER tiene_cupo");
+        }
+
         $ready = true;
     }
 
@@ -38,7 +44,7 @@ class Curso {
     public static function create(array $data): int {
         self::ensureSchema();
         $stmt = DB::conn()->prepare(
-            'INSERT INTO cursos (nombre, descripcion, fecha_inicio, fecha_fin, activo, terminado, created_at) VALUES (?,?,?,?,?,?,NOW())'
+            'INSERT INTO cursos (nombre, descripcion, fecha_inicio, fecha_fin, activo, terminado, tiene_cupo, cupo_maximo, created_at) VALUES (?,?,?,?,?,?,?,?,NOW())'
         );
         $stmt->execute([
             $data['nombre'],
@@ -46,7 +52,9 @@ class Curso {
             $data['fecha_inicio'],
             $data['fecha_fin'],
             $data['activo'],
-            0
+            0,
+            $data['tiene_cupo'] ?? 0,
+            $data['cupo_maximo'] ?? 0
         ]);
         return (int)DB::conn()->lastInsertId();
     }
@@ -54,7 +62,7 @@ class Curso {
     public static function update(int $id, array $data): void {
         self::ensureSchema();
         $stmt = DB::conn()->prepare(
-            'UPDATE cursos SET nombre=?, descripcion=?, fecha_inicio=?, fecha_fin=?, activo=? WHERE id=?'
+            'UPDATE cursos SET nombre=?, descripcion=?, fecha_inicio=?, fecha_fin=?, activo=?, tiene_cupo=?, cupo_maximo=? WHERE id=?'
         );
         $stmt->execute([
             $data['nombre'],
@@ -62,6 +70,8 @@ class Curso {
             $data['fecha_inicio'],
             $data['fecha_fin'],
             $data['activo'],
+            $data['tiene_cupo'] ?? 0,
+            $data['cupo_maximo'] ?? 0,
             $id
         ]);
     }
