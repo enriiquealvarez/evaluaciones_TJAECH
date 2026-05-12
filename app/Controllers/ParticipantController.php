@@ -348,7 +348,7 @@ class ParticipantController extends BaseController {
 
         $this->sendParticipantRegistrationEmail($nombre, $correo, $curso, $telefono);
 
-        Session::flash('success', 'Registro al curso completado, las indicaciones y recomendaciones del curso fueron enviadas a su correo electrónico. Cuando el Curso tenga evaluación, podrá ingresar con su correo y número telefónico.');
+        Session::flash('success', 'Registro al curso completado, las indicaciones y recomendaciones del curso fueron enviadas a su correo electrónico. Cuando el curso tenga evaluación, podrá ingresar con su correo y número telefónico.');
         redirect('/curso/registro?curso_id=' . $cursoId);
     }
 
@@ -371,7 +371,7 @@ class ParticipantController extends BaseController {
                 $email,
                 $telefono
             );
-            $text = "Hola {$name},\n\nTu registro al programa de capacitacion \"{$curso['nombre']}\" fue recibido correctamente.\nAdjuntamos el documento oficial con requisitos, recomendaciones e indicaciones para tu participacion.\n\nCorreo registrado: {$email}\nTelefono registrado: {$telefono}\nContacto: ija@tjaech.gob.mx\n\nTribunal de Justicia Administrativa del Estado de Chiapas";
+            $text = "Hola {$name},\n\nTu registro al curso ha sido recibido exitosamente.\nAdjuntamos el documento con indicaciones y recomendaciones para tu participación, te sugerimos revisarlo antes del curso.\n\nCorreo registrado: {$email}\nTelefono registrado: {$telefono}\nContacto: ija@tjaech.gob.mx\n\nTribunal de Justicia Administrativa del Estado de Chiapas";
             $mailer->send($email, $name, $subject, $html, $text, [[
                 'path' => $guidePath,
                 'filename' => 'indicaciones-participantes-capacitaciones.pdf',
@@ -415,8 +415,8 @@ class ParticipantController extends BaseController {
             <td style="padding:24px 24px 8px;">
               <h2 style="margin:0 0 8px 0;">Registro recibido correctamente</h2>
               <p style="margin:0 0 12px 0;">Hola {$safeName},</p>
-              <p style="margin:0 0 12px 0;">Tu registro al programa de capacitacion <strong>{$safeCourse}</strong> ha sido recibido exitosamente.</p>
-              <p style="margin:0 0 12px 0;">Adjuntamos el documento oficial con requisitos, recomendaciones e indicaciones para tu participacion. Te sugerimos revisarlo antes del inicio de la capacitacion.</p>
+              <p style="margin:0 0 12px 0;">Tu registro al curso ha sido recibido exitosamente.</p>
+              <p style="margin:0 0 12px 0;">Adjuntamos el documento con indicaciones y recomendaciones para tu participación, te sugerimos revisarlo antes del curso.</p>
             </td>
           </tr>
           <tr>
@@ -435,7 +435,7 @@ class ParticipantController extends BaseController {
           </tr>
           <tr>
             <td style="padding:14px 24px;background:#faf7ef;font-size:12px;color:#334;">
-              Direccion de Justicia Administrativa - Tribunal de Justicia Administrativa del Estado de Chiapas
+              Instituto de Justicia Administrativa - Tribunal de Justicia Administrativa del Estado de Chiapas
             </td>
           </tr>
         </table>
