@@ -21,7 +21,7 @@
         </article>
         <article class="results-kpi-card">
             <div>
-                <span>Promedio de satisfacci&oacute;n (1-4)</span>
+                <span>Promedio de satisfacci&oacute;n (1-5)</span>
                 <strong><?= e((string)($dashboard['promedio_satisfaccion'] ?? 0)) ?></strong>
             </div>
         </article>

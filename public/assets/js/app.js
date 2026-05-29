@@ -127,6 +127,43 @@
     verifyTimer = setTimeout(checkContact, 400);
   };
 
+  const startTimer = (durationSeconds) => {
+    const display = document.getElementById('timerDisplay');
+    if (!display) return;
+
+    let remaining = durationSeconds;
+
+    const updateDisplay = () => {
+      const minutes = Math.floor(remaining / 60);
+      const seconds = remaining % 60;
+      display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    };
+
+    updateDisplay();
+
+    const timerInterval = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) {
+        remaining = 0;
+        updateDisplay();
+        clearInterval(timerInterval);
+        alert('El tiempo de 20 minutos para responder la evaluación ha concluido. Sus respuestas se enviarán automáticamente.');
+        form.submit();
+      } else {
+        updateDisplay();
+        if (remaining <= 120) {
+          const container = document.getElementById('timerContainer');
+          if (container) {
+            container.style.color = '#c53030';
+            container.style.backgroundColor = '#fff5f5';
+            container.style.borderColor = '#fc8181';
+            container.style.animation = 'pulse 1s infinite alternate';
+          }
+        }
+      }
+    }, 1000);
+  };
+
   if (goQuestions) {
     goQuestions.addEventListener('click', async () => {
       if (!validateRegistro()) {
@@ -144,6 +181,7 @@
       preguntas.hidden = false;
       registro.hidden = true;
       window.scrollTo({ top: preguntas.offsetTop - 20, behavior: 'smooth' });
+      startTimer(1200);
     });
   }
 

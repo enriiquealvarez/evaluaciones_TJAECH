@@ -3,36 +3,36 @@
 class ParticipantController extends BaseController {
     private const PARTICIPANT_GUIDE_RELATIVE_PATH = '/assets/docs/indicaciones-participantes-capacitaciones.pdf';
     private const COURSE_REGISTRATION_INSTITUTIONS = [
-        'Secretaria General de Gobierno y Mediacion',
-        'Secretaria de Finanzas',
-        'Secretaria del Campo',
-        'Secretaria Anticorrupcion y Buen Gobierno',
-        'Secretaria de la Mujer e Igualdad de Genero',
-        'Secretaria de Proteccion Civil',
-        'Secretaria de Infraestructura',
-        'Secretaria de Medio Ambiente e Historia Natural',
-        'Secretaria de Economia y del Trabajo',
-        'Secretaria del Humanismo',
-        'Secretaria de Agricultura, Ganaderia y Pesca',
-        'Secretaria de Turismo',
-        'Secretaria para el Desarrollo Sustentable de los Pueblos Indigenas',
-        'Secretaria de Salud',
-        'Secretaria de Educacion',
-        'Secretaria de Seguridad del Pueblo',
-        'Secretaria de Movilidad y Transporte',
-        'Secretaria de la Frontera Sur',
-        'Instituto de Consejeria Juridica del Buen Gobierno del Estado',
-        'Secretaria de Pesca y Acuacultura del Pueblo',
-        'Comision Estatal de Busqueda de Personas',
-        'Oficialia Mayor del Estado de Chiapas',
+        'Secretaría General de Gobierno y Mediación',
+        'Secretaría de Finanzas.',
+        'Secretaría de Campo',
+        'Secretaría Anticorrupción y Buen Gobierno.',
+        'Secretaría de la Mujer e Igualdad de Género.',
+        'Secretaría de Protección Civil.',
+        'Secretaría de Infraestructura.',
+        'Secretaría de Medio Ambiente e Historia Natural.',
+        'Secretaría de Economía y del Trabajo.',
+        'Secretaría del Humanismo.',
+        'Secretaría de Agricultura, Ganadería y Pesca.',
+        'Secretaría de Turismo',
+        'Secretaría para el Desarrollo Sustentable de los Pueblos Indígenas.',
+        'Secretaría de Salud.',
+        'Secretaría de Educación.',
+        'Secretaría de Seguridad del Pueblo.',
+        'Secretaría de Movilidad y Transporte.',
+        'Secretaría de la frontera sur.',
+        'Instituto de Consejería Jurídica del Buen Gobierno del Estado.',
+        'Secretaría de Pesca y Acuacultura del Pueblo.',
+        'Comisión Estatal de Búsqueda de Personas',
+        'Oficialía Mayor del Estado de Chiapas',
         'Transparencia para el Pueblo de Chiapas',
         'Centro Estatal de Trasplantes del Estado de Chiapas',
-        'Coordinacion Estatal para el Mejoramiento del Zoologico "Miguel Alvarez del Toro"',
-        'Junta Local de Conciliacion y Arbitraje del Estado de Chiapas',
+        'Coordinación Estatal para el Mejoramiento del Zoológico "Miguel Álvarez del Toro"',
+        'Junta Local de Conciliación y Arbitraje del Estado de Chiapas',
         'Instituto de la Juventud del Estado de Chiapas',
-        'Instituto de Proteccion Social y Beneficencia Publica del Estado de Chiapas',
-        'Centro Estatal de Prevencion Social de la Violencia y Participacion Ciudadana',
-        'Universidad de Seguridad Publica del Sureste',
+        'Instituto de Protección Social y Beneficencia Pública del Estado de Chiapas',
+        'Centro Estatal de Prevención Social de la Violencia y Participación Ciudadana',
+        'Universidad de Seguridad Pública del Sureste',
         'Instituto de Evaluacion, Profesionalizacion y Promocion Docente de Chiapas',
         'Comision Estatal de Simplificacion Administrativa',
         'Instituto para la Gestion Integral de Riesgos de Desastres del Estado de Chiapas',
@@ -371,7 +371,7 @@ class ParticipantController extends BaseController {
                 $email,
                 $telefono
             );
-            $text = "Hola {$name},\n\nTu registro al curso ha sido recibido exitosamente.\nAdjuntamos el documento con indicaciones y recomendaciones para tu participación, te sugerimos revisarlo antes del curso.\n\nCorreo registrado: {$email}\nTelefono registrado: {$telefono}\nContacto: ija@tjaech.gob.mx\n\nTribunal de Justicia Administrativa del Estado de Chiapas";
+            $text = "Hola {$name},\n\nTu registro al curso \"" . ($curso['nombre'] ?? 'Programa de capacitación') . "\" ha sido recibido exitosamente.\nAdjuntamos el documento con indicaciones y recomendaciones para tu participación, te sugerimos revisarlo antes del curso.\n\nCorreo registrado: {$email}\nTelefono registrado: {$telefono}\nContacto: ija@tjaech.gob.mx\n\nTribunal de Justicia Administrativa del Estado de Chiapas";
             $mailer->send($email, $name, $subject, $html, $text, [[
                 'path' => $guidePath,
                 'filename' => 'indicaciones-participantes-capacitaciones.pdf',
@@ -415,7 +415,7 @@ class ParticipantController extends BaseController {
             <td style="padding:24px 24px 8px;">
               <h2 style="margin:0 0 8px 0;">Registro recibido correctamente</h2>
               <p style="margin:0 0 12px 0;">Hola {$safeName},</p>
-              <p style="margin:0 0 12px 0;">Tu registro al curso ha sido recibido exitosamente.</p>
+              <p style="margin:0 0 12px 0;">Tu registro al curso "<strong>{$safeCourse}</strong>" ha sido recibido exitosamente.</p>
               <p style="margin:0 0 12px 0;">Adjuntamos el documento con indicaciones y recomendaciones para tu participación, te sugerimos revisarlo antes del curso.</p>
             </td>
           </tr>
@@ -676,26 +676,27 @@ HTML;
         $q5 = trim($_POST['q5'] ?? '');
         $comentarios = trim($_POST['comentarios'] ?? '');
 
-        $q1Valid = ['Muy satisfecho/a', 'Satisfecho/a', 'Ni satisfecho/a ni insatisfecho/a', 'Insatisfecho/a'];
-        $q2Valid = ['Muy buena', 'Buena', 'Regular', 'Deficiente'];
-        $q3Valid = ['Excelente', 'Buena', 'Regular', 'Deficiente'];
-        $q4Valid = ['Muy utiles', 'Utiles', 'Poco utiles', 'Nada utiles'];
-        $q5Valid = ['Si, definitivamente', 'Probablemente si', 'Probablemente no', 'No'];
+        $qScaleValid = ['5', '4', '3', '2', '1'];
+        $q1Valid = array_merge(['Muy satisfecho/a', 'Satisfecho/a', 'Ni satisfecho/a ni insatisfecho/a', 'Insatisfecho/a'], $qScaleValid);
+        $q2Valid = array_merge(['Muy buena', 'Buena', 'Regular', 'Deficiente'], $qScaleValid);
+        $q3Valid = array_merge(['Excelente', 'Buena', 'Regular', 'Deficiente'], $qScaleValid);
+        $q4Valid = array_merge(['Muy utiles', 'Utiles', 'Poco utiles', 'Nada utiles'], $qScaleValid);
+        $q5Valid = array_merge(['Si, definitivamente', 'Probablemente si', 'Probablemente no', 'No'], $qScaleValid);
 
         if (!in_array($q1, $q1Valid, true)) {
-            $validator->required('q1', '', 'Seleccione una opcion valida para la pregunta 1.');
+            $validator->required('q1', '', 'Seleccione una opción válida para la pregunta 1.');
         }
         if (!in_array($q2, $q2Valid, true)) {
-            $validator->required('q2', '', 'Seleccione una opcion valida para la pregunta 2.');
+            $validator->required('q2', '', 'Seleccione una opción válida para la pregunta 2.');
         }
         if (!in_array($q3, $q3Valid, true)) {
-            $validator->required('q3', '', 'Seleccione una opcion valida para la pregunta 3.');
+            $validator->required('q3', '', 'Seleccione una opción válida para la pregunta 3.');
         }
         if (!in_array($q4, $q4Valid, true)) {
-            $validator->required('q4', '', 'Seleccione una opcion valida para la pregunta 4.');
+            $validator->required('q4', '', 'Seleccione una opción válida para la pregunta 4.');
         }
         if (!in_array($q5, $q5Valid, true)) {
-            $validator->required('q5', '', 'Seleccione una opcion valida para la pregunta 5.');
+            $validator->required('q5', '', 'Seleccione una opción válida para la pregunta 5.');
         }
         if (mb_strlen($comentarios) > 1000) {
             $validator->required('comentarios', '', 'Los comentarios no deben exceder 1000 caracteres.');
@@ -722,7 +723,7 @@ HTML;
 
         $this->triggerWebhookSiAprobado((int)$respuesta['id']);
 
-        Session::flash('success', 'Encuesta de satisfaccion enviada. Aqui puede consultar su calificacion.');
+        Session::flash('success', 'Encuesta de satisfacción enviada. Aquí puede consultar su calificación.');
         redirect('/participante/ver-calificacion?id=' . (int)$respuesta['id']);
     }
 

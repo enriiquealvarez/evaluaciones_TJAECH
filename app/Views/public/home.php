@@ -3,8 +3,8 @@
         <article class="home-catalog-welcome">
             <p class="welcome-kicker">Sistema institucional</p>
             <h1>Evaluaci&oacute;n de Capacitaciones</h1>
-            <p>Primero complete su registro al curso. Cuando la evaluaci&oacute;n est&eacute; activa, podr&aacute; ingresar con correo y tel&eacute;fono registrados.</p>
-            <p class="home-catalog-guide">Si ya present&oacute; su evaluaci&oacute;n, puede consultar su resultado directamente desde la tarjeta de su curso.</p>
+            <p>Para poder realizar su evaluación, deberá haberse registrado al curso y cumplido con el porcentaje de asistencia que establezca la convocatoria correspondiente.</p>
+            <p class="home-catalog-guide">Una vez presentada su evaluación, podrá consultar su resultado directamente en el apartado de "Mis calificaciones", ubicado en la parte superior derecha de esta página.</p>
         </article>
         <?php if (!empty($flash)): ?>
             <div class="alert alert-magenta"><?= e($flash) ?></div>

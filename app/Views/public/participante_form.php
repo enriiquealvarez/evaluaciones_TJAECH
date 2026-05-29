@@ -4,29 +4,12 @@
             <div class="public-badge">
                 <img src="<?= e(asset('/assets/img/logo_tjaech.png')) ?>" alt="Logo TJAECH" width="52" height="52" style="width:52px;height:52px;object-fit:contain" onerror="this.style.display='none'">
             </div>
-            <p class="public-overline">Evaluación del curso</p>
-            <h2><?= e($curso['nombre']) ?></h2>
-            <p class="public-copy"><?= e($evaluacion['titulo']) ?></p>
-            <div class="public-meta">
-                <div>
-                    <span class="meta-label">Modalidad</span>
-                    <strong>Evaluaci&oacute;n en l&iacute;nea</strong>
-                </div>
-                <div>
-                    <span class="meta-label">Soporte</span>
-                    <strong>informatica@tjaech.gob.mx</strong>
-                </div>
-            </div>
-            <ul class="public-features">
-                <li>Acceso con datos de registro previo</li>
-                <li>Tiempo estimado corto</li>
-                <li>Resultados institucionales</li>
-            </ul>
         </div>
         <div class="public-card public-card-pro">
             <div class="page-header">
-                <h3>Iniciar evaluaci&oacute;n</h3>
-                <p><?= e($evaluacion['titulo']) ?></p>
+                <h3>iniciar evaluación.</h3>
+                <p>Evaluación en Curso: <strong><?= e($curso['nombre']) ?></strong></p>
+                <p style="margin-top: 6px; font-weight: bold; color: var(--magenta);">Tiempo estimado: 20 minutos.</p>
             </div>
 
             <?php if (!empty($errors)): ?>
@@ -61,13 +44,23 @@
                         </label>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" id="goQuestions">Continuar a preguntas</button>
-                        <a href="<?= e(url('/curso/registro?curso_id=' . (int)$curso['id'])) ?>" class="btn btn-secondary">Registrarme al curso</a>
+                        <button type="button" class="btn btn-primary" id="goQuestions" style="min-width: 220px;">Continuar a preguntas</button>
                     </div>
                 </div>
 
                 <div class="form-section" id="preguntasSection" hidden>
-                    <h3>Paso 2: Evaluaci&oacute;n</h3>
+                    <style>
+                        @keyframes pulse {
+                            from { opacity: 1; }
+                            to { opacity: 0.5; }
+                        }
+                    </style>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+                        <h3 style="margin: 0;">Paso 2: Evaluaci&oacute;n</h3>
+                        <div id="timerContainer" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid #cbd5e1; border-radius: 20px; background: #f8fafc; color: #1b446e; font-weight: bold; font-size: 0.95rem; transition: all 0.3s ease;">
+                            <span>⏱️ Tiempo restante: <span id="timerDisplay">20:00</span></span>
+                        </div>
+                    </div>
                     <div class="progress" id="progressBar"><span></span></div>
                     <?php foreach ($preguntas as $index => $pregunta): ?>
                         <div class="question">

@@ -31,6 +31,9 @@ function appBasePath(): string {
 
 function isLocalHost(string $host): bool {
     $host = strtolower(trim($host));
+    if (str_contains($host, ':')) {
+        $host = explode(':', $host)[0];
+    }
     if ($host === 'localhost' || $host === '127.0.0.1' || $host === '::1') {
         return true;
     }

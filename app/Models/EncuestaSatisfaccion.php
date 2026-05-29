@@ -70,25 +70,21 @@ class EncuestaSatisfaccion {
         return $stmt->fetchAll();
     }
 
+    private static function mapToScale(string $val, array $mapping): string {
+        if (isset($mapping[$val])) {
+            return $mapping[$val];
+        }
+        return $val;
+    }
+
     public static function dashboard(array $rows): array {
-        $q1Options = ['Muy satisfecho/a', 'Satisfecho/a', 'Ni satisfecho/a ni insatisfecho/a', 'Insatisfecho/a'];
-        $q2Options = ['Muy buena', 'Buena', 'Regular', 'Deficiente'];
-        $q3Options = ['Excelente', 'Buena', 'Regular', 'Deficiente'];
-        $q4Options = ['Muy utiles', 'Utiles', 'Poco utiles', 'Nada utiles'];
-        $q5Options = ['Si, definitivamente', 'Probablemente si', 'Probablemente no', 'No'];
+        $scaleOptions = ['5', '4', '3', '2', '1'];
 
-        $q1 = array_fill_keys($q1Options, 0);
-        $q2 = array_fill_keys($q2Options, 0);
-        $q3 = array_fill_keys($q3Options, 0);
-        $q4 = array_fill_keys($q4Options, 0);
-        $q5 = array_fill_keys($q5Options, 0);
-
-        $scoreMap = [
-            'Muy satisfecho/a' => 4,
-            'Satisfecho/a' => 3,
-            'Ni satisfecho/a ni insatisfecho/a' => 2,
-            'Insatisfecho/a' => 1,
-        ];
+        $q1 = array_fill_keys($scaleOptions, 0);
+        $q2 = array_fill_keys($scaleOptions, 0);
+        $q3 = array_fill_keys($scaleOptions, 0);
+        $q4 = array_fill_keys($scaleOptions, 0);
+        $q5 = array_fill_keys($scaleOptions, 0);
 
         $total = count($rows);
         $scoreSum = 0;
@@ -98,12 +94,50 @@ class EncuestaSatisfaccion {
         $porCurso = [];
 
         foreach ($rows as $row) {
-            $v1 = (string)($row['q1_satisfaccion_general'] ?? '');
-            $v2 = (string)($row['q2_calidad_contenidos'] ?? '');
-            $v3 = (string)($row['q3_organizacion_actividades'] ?? '');
-            $v4 = (string)($row['q4_utilidad_funciones'] ?? '');
-            $v5 = (string)($row['q5_recomendacion'] ?? '');
+            $v1 = trim((string)($row['q1_satisfaccion_general'] ?? ''));
+            $v2 = trim((string)($row['q2_calidad_contenidos'] ?? ''));
+            $v3 = trim((string)($row['q3_organizacion_actividades'] ?? ''));
+            $v4 = trim((string)($row['q4_utilidad_funciones'] ?? ''));
+            $v5 = trim((string)($row['q5_recomendacion'] ?? ''));
             $curso = (string)($row['curso_nombre'] ?? 'Sin curso');
+
+            // Map old options to 1-5 scale strings
+            $v1 = self::mapToScale($v1, [
+                'Muy satisfecho/a' => '5',
+                'Satisfecho/a' => '4',
+                'Ni satisfecho/a ni insatisfecho/a' => '3',
+                'Insatisfecho/a' => '1',
+            ]);
+            $v2 = self::mapToScale($v2, [
+                'Muy buena' => '5',
+                'Buena' => '4',
+                'Regular' => '3',
+                'Deficiente' => '1',
+            ]);
+            $v3 = self::mapToScale($v3, [
+                'Excelente' => '5',
+                'Buena' => '4',
+                'Regular' => '3',
+                'Deficiente' => '1',
+            ]);
+            $v4 = self::mapToScale($v4, [
+                'Muy utiles' => '5',
+                'Muy útiles' => '5',
+                'Utiles' => '4',
+                'Útiles' => '4',
+                'Poco utiles' => '3',
+                'Poco útiles' => '3',
+                'Nada utiles' => '1',
+                'Nada útiles' => '1',
+            ]);
+            $v5 = self::mapToScale($v5, [
+                'Si, definitivamente' => '5',
+                'Sí, definitivamente' => '5',
+                'Probablemente si' => '4',
+                'Probablemente sí' => '4',
+                'Probablemente no' => '2',
+                'No' => '1',
+            ]);
 
             if (isset($q1[$v1])) $q1[$v1]++;
             if (isset($q2[$v2])) $q2[$v2]++;
@@ -111,13 +145,17 @@ class EncuestaSatisfaccion {
             if (isset($q4[$v4])) $q4[$v4]++;
             if (isset($q5[$v5])) $q5[$v5]++;
 
-            if (isset($scoreMap[$v1])) {
-                $scoreSum += $scoreMap[$v1];
+            // Accumulate numeric score for KPI average
+            if ($v1 !== '') {
+                $scoreSum += (int)$v1;
                 $scoreCount++;
             }
-            if ($v5 === 'Si, definitivamente' || $v5 === 'Probablemente si') {
+
+            // recommendation percent threshold (>= 4)
+            if ($v5 === '5' || $v5 === '4') {
                 $recomendaria++;
             }
+
             if (trim((string)($row['comentarios'] ?? '')) !== '') {
                 $comentarios++;
             }

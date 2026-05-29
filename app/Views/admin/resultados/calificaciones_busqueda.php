@@ -13,7 +13,7 @@
                     Consultar calificaciones por Participante
                 </h1>
                 <p style="color: #6b7280; font-size: 0.95rem; margin: 0; font-weight: 500;">
-                    Usa la misma lógica de búsqueda que vio el participante para encontrar sus resultados.
+                    Para realizar la consulta de sus resultados deberá ingresar los mismos datos que proporcionó en su registro.
                 </p>
             </div>
 
@@ -42,7 +42,7 @@
                 <input type="hidden" name="_csrf" value="<?= e(CSRF::token()) ?>">
 
                 <!-- Fila 1: Correo y Teléfono -->
-                <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; margin-bottom: 1.5rem; align-items: flex-start;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; align-items: flex-start;">
                     <div>
                         <label for="correo" style="display: block; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem; font-size: 0.95rem;">Correo electrónico</label>
                         <input 
@@ -56,9 +56,6 @@
                             onblur="this.style.borderColor='#d1d5db'; this.style.background='#f9fafb'; this.style.boxShadow='none';"
                         >
                     </div>
-
-                    <!-- Divisor "o" -->
-                    <div style="padding-top: 1.75rem; font-weight: 600; color: #9ca3af;">o</div>
 
                     <div>
                         <label for="telefono" style="display: block; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem; font-size: 0.95rem;">Teléfono</label>
