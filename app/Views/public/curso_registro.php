@@ -598,6 +598,36 @@ $colectivos = [
         <p class="kicker">REGISTRO AL CURSO</p>
         <h1 class="hero-title">&quot;<?= e($courseTitle) ?>&quot;</h1>
 
+        <?php if (!empty($curso['documento_bases'])): ?>
+            <div style="margin-top: 24px; margin-bottom: 24px; padding: 18px 24px; border-radius: 12px; background: #eff6ff; border: 1px solid #bfdbfe; max-width: 760px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); text-align: left;">
+                <div style="color: #1e40af; background: #dbeafe; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 24px; height: 24px;">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <h4 style="margin: 0; color: #1e3a8a; font-size: 1.05rem; font-weight: 700;">Bases y Recomendaciones del Curso</h4>
+                    <p style="margin: 4px 0 0; color: #1e40af; font-size: 0.88rem; line-height: 1.4;">
+                        Antes de realizar su registro, le recomendamos descargar y leer los lineamientos del curso.
+                    </p>
+                    <div style="margin-top: 10px;">
+                        <a href="<?= e(asset('/uploads/bases/' . $curso['documento_bases'])) ?>" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #1e40af; color: #ffffff; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 0.88rem; box-shadow: 0 4px 6px -1px rgba(30,58,138,0.3); transition: background 0.2s;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; stroke-linecap: round; stroke-linejoin: round;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Descargar Documento
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <div class="alerts" style="margin-top: 32px; max-width: 760px;">
             <?php if (!empty($success)): ?>
                 <div class="alert alert-green">

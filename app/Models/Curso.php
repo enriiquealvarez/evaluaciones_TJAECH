@@ -18,6 +18,11 @@ class Curso {
             DB::conn()->exec("ALTER TABLE cursos ADD COLUMN cupo_maximo INT NOT NULL DEFAULT 0 AFTER tiene_cupo");
         }
 
+        $colBases = DB::conn()->query("SHOW COLUMNS FROM cursos LIKE 'documento_bases'")->fetch();
+        if (!$colBases) {
+            DB::conn()->exec("ALTER TABLE cursos ADD COLUMN documento_bases VARCHAR(255) NULL AFTER cupo_maximo");
+        }
+
         $ready = true;
     }
 
@@ -44,7 +49,7 @@ class Curso {
     public static function create(array $data): int {
         self::ensureSchema();
         $stmt = DB::conn()->prepare(
-            'INSERT INTO cursos (nombre, descripcion, fecha_inicio, fecha_fin, activo, terminado, tiene_cupo, cupo_maximo, created_at) VALUES (?,?,?,?,?,?,?,?,NOW())'
+            'INSERT INTO cursos (nombre, descripcion, fecha_inicio, fecha_fin, activo, terminado, tiene_cupo, cupo_maximo, documento_bases, created_at) VALUES (?,?,?,?,?,?,?,?,?,NOW())'
         );
         $stmt->execute([
             $data['nombre'],
@@ -54,7 +59,8 @@ class Curso {
             $data['activo'],
             0,
             $data['tiene_cupo'] ?? 0,
-            $data['cupo_maximo'] ?? 0
+            $data['cupo_maximo'] ?? 0,
+            $data['documento_bases'] ?? null
         ]);
         return (int)DB::conn()->lastInsertId();
     }
@@ -62,7 +68,7 @@ class Curso {
     public static function update(int $id, array $data): void {
         self::ensureSchema();
         $stmt = DB::conn()->prepare(
-            'UPDATE cursos SET nombre=?, descripcion=?, fecha_inicio=?, fecha_fin=?, activo=?, tiene_cupo=?, cupo_maximo=? WHERE id=?'
+            'UPDATE cursos SET nombre=?, descripcion=?, fecha_inicio=?, fecha_fin=?, activo=?, tiene_cupo=?, cupo_maximo=?, documento_bases=? WHERE id=?'
         );
         $stmt->execute([
             $data['nombre'],
@@ -72,6 +78,7 @@ class Curso {
             $data['activo'],
             $data['tiene_cupo'] ?? 0,
             $data['cupo_maximo'] ?? 0,
+            $data['documento_bases'] ?? null,
             $id
         ]);
     }

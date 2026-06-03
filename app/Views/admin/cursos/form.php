@@ -11,7 +11,7 @@
         </div>
     <?php endif; ?>
 
-    <form method="post" action="<?= $curso ? e(url('/admin/cursos/actualizar')) : e(url('/admin/cursos/guardar')) ?>" class="form">
+    <form method="post" action="<?= $curso ? e(url('/admin/cursos/actualizar')) : e(url('/admin/cursos/guardar')) ?>" class="form" enctype="multipart/form-data">
         <input type="hidden" name="_csrf" value="<?= e(CSRF::token()) ?>">
         <?php if ($curso): ?>
             <input type="hidden" name="id" value="<?= (int)$curso['id'] ?>">
@@ -42,6 +42,18 @@
         <label id="cupo_maximo_container" style="<?= (int)($old['tiene_cupo'] ?? ($curso['tiene_cupo'] ?? 0)) === 1 ? '' : 'display: none;' ?>">
             Número máximo de registros
             <input type="number" name="cupo_maximo" min="1" value="<?= e($old['cupo_maximo'] ?? ($curso['cupo_maximo'] ?? '')) ?>">
+        </label>
+        
+        <label>Documento de Recomendaciones / Bases (PDF o JPG)
+            <input type="file" name="documento_bases" accept="application/pdf, image/jpeg, image/jpg">
+            <?php if ($curso && !empty($curso['documento_bases'])): ?>
+                <div style="margin-top: 5px; font-size: 13px;">
+                    Archivo actual: 
+                    <a href="<?= e(asset('/uploads/bases/' . $curso['documento_bases'])) ?>" target="_blank" style="color: #1b3f66; font-weight: 600; text-decoration: underline;">
+                        <?= e($curso['documento_bases']) ?>
+                    </a>
+                </div>
+            <?php endif; ?>
         </label>
 
         <div class="form-actions">

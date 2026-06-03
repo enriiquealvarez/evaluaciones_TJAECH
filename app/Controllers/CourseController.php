@@ -31,6 +31,26 @@ class CourseController extends BaseController {
             Session::flash('old', $_POST);
             redirect('/admin/cursos/crear');
         }
+
+        $documentoBases = null;
+        if (isset($_FILES['documento_bases']) && $_FILES['documento_bases']['error'] === UPLOAD_ERR_OK) {
+            $fileTmpPath = $_FILES['documento_bases']['tmp_name'];
+            $fileName = $_FILES['documento_bases']['name'];
+            $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+            if (in_array($fileExtension, ['pdf', 'jpg', 'jpeg'])) {
+                $uploadDir = __DIR__ . '/../../public/uploads/bases/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+                $newFileName = uniqid('bases_') . '.' . $fileExtension;
+                $destPath = $uploadDir . $newFileName;
+                if (move_uploaded_file($fileTmpPath, $destPath)) {
+                    $documentoBases = $newFileName;
+                }
+            }
+        }
+
         Curso::create([
             'nombre' => trim($_POST['nombre']),
             'descripcion' => trim($_POST['descripcion'] ?? ''),
@@ -38,7 +58,8 @@ class CourseController extends BaseController {
             'fecha_fin' => $_POST['fecha_fin'] ?: null,
             'activo' => isset($_POST['activo']) ? 1 : 0,
             'tiene_cupo' => isset($_POST['tiene_cupo']) ? 1 : 0,
-            'cupo_maximo' => (int)($_POST['cupo_maximo'] ?? 0)
+            'cupo_maximo' => (int)($_POST['cupo_maximo'] ?? 0),
+            'documento_bases' => $documentoBases
         ]);
         Session::flash('success', 'Curso creado.');
         redirect('/admin/cursos');
@@ -72,6 +93,31 @@ class CourseController extends BaseController {
             Session::flash('old', $_POST);
             redirect('/admin/cursos/editar?id=' . $id);
         }
+
+        $curso = Curso::find($id);
+        $documentoBases = $curso['documento_bases'] ?? null;
+        
+        if (isset($_FILES['documento_bases']) && $_FILES['documento_bases']['error'] === UPLOAD_ERR_OK) {
+            $fileTmpPath = $_FILES['documento_bases']['tmp_name'];
+            $fileName = $_FILES['documento_bases']['name'];
+            $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+            if (in_array($fileExtension, ['pdf', 'jpg', 'jpeg'])) {
+                $uploadDir = __DIR__ . '/../../public/uploads/bases/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+                $newFileName = uniqid('bases_') . '.' . $fileExtension;
+                $destPath = $uploadDir . $newFileName;
+                if (move_uploaded_file($fileTmpPath, $destPath)) {
+                    if ($documentoBases && is_file($uploadDir . $documentoBases)) {
+                        @unlink($uploadDir . $documentoBases);
+                    }
+                    $documentoBases = $newFileName;
+                }
+            }
+        }
+
         Curso::update($id, [
             'nombre' => trim($_POST['nombre']),
             'descripcion' => trim($_POST['descripcion'] ?? ''),
@@ -79,7 +125,8 @@ class CourseController extends BaseController {
             'fecha_fin' => $_POST['fecha_fin'] ?: null,
             'activo' => isset($_POST['activo']) ? 1 : 0,
             'tiene_cupo' => isset($_POST['tiene_cupo']) ? 1 : 0,
-            'cupo_maximo' => (int)($_POST['cupo_maximo'] ?? 0)
+            'cupo_maximo' => (int)($_POST['cupo_maximo'] ?? 0),
+            'documento_bases' => $documentoBases
         ]);
         Session::flash('success', 'Curso actualizado.');
         redirect('/admin/cursos');
