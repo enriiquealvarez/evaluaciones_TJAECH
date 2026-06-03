@@ -322,6 +322,46 @@
     </section>
 </section>
 
+<div id="emailMasivoModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-content" style="background:#ffffff; border-radius:12px; width:90%; max-width:600px; padding:0; box-shadow:0 10px 25px rgba(0,0,0,0.15); overflow:hidden; border:1px solid #e2e8f0; font-family:'Montserrat', sans-serif;">
+        <div style="background:#1b3f66; color:#ffffff; padding:20px; display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0; font-size:16px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Enviar Correo Masivo Informativo</h3>
+            <button type="button" id="closeEmailModal" style="background:none; border:none; color:#ffffff; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
+        </div>
+        <form method="post" action="<?= e(url('/admin/inscripciones/enviar-correo')) ?>" style="padding:25px; display:flex; flex-direction:column; gap:16px;">
+            <input type="hidden" name="_csrf" value="<?= e(CSRF::token()) ?>">
+            <input type="hidden" name="curso_id" value="<?= (int)$filters['curso_id'] ?>">
+            
+            <!-- Pass current filters to preserve state on redirect -->
+            <input type="hidden" name="q" value="<?= e((string)$filters['q']) ?>">
+            <input type="hidden" name="search_in" value="<?= e((string)($filters['search_in'] ?? 'all')) ?>">
+            <input type="hidden" name="per_page" value="<?= (int)$perPage ?>">
+            <input type="hidden" name="page" value="<?= (int)$page ?>">
+
+            <div style="display:flex; flex-direction:column; gap:6px; text-align:left;">
+                <label style="font-size:11px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Curso Destinatario</label>
+                <input type="text" readonly value="<?= e($selectedCourseName) ?>" style="padding:10px; border-radius:6px; border:1px solid #cbd5e1; background:#f8fafc; color:#64748b; font-size:14px; font-weight:600; outline:none; cursor:default;">
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:6px; text-align:left;">
+                <label for="asunto" style="font-size:11px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Asunto del Correo</label>
+                <input type="text" id="asunto" name="asunto" required placeholder="Ej. Indicaciones de acceso para la evaluación" style="padding:10px; border-radius:6px; border:1px solid #cbd5e1; font-size:14px; color:#1e293b;">
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:6px; text-align:left;">
+                <label for="mensaje" style="font-size:11px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Mensaje / Cuerpo del Correo</label>
+                <textarea id="mensaje" name="mensaje" required rows="8" placeholder="Escriba el aviso aquí..." style="padding:10px; border-radius:6px; border:1px solid #cbd5e1; font-size:14px; color:#1e293b; resize:vertical; font-family:inherit;"></textarea>
+                <p style="margin:0; font-size:11px; color:#94a3b8; font-style:italic;">Se incluirá un saludo personalizado automático al inicio y un pie de firma institucional al final.</p>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:10px; border-top:1px solid #f1f5f9; padding-top:20px;">
+                <button type="button" id="cancelEmailModal" class="btn btn-secondary btn-no-icon" style="padding:10px 20px; font-size:13px; font-weight:600;">Cancelar</button>
+                <button type="submit" class="btn btn-primary btn-no-icon" style="padding:10px 20px; font-size:13px; font-weight:600; background:#1b3f66; color:#ffffff;">Enviar a todos los inscritos</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script id="inscripcionesDashboardData" type="application/json"><?= $dashboardJson ?: '{}' ?></script>
 <script id="inscripcionesExportRows" type="application/json"><?= $exportRowsJson ?: '[]' ?></script>
 <script>
@@ -404,45 +444,6 @@
     })();
 </script>
 
-<div id="emailMasivoModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
-    <div class="modal-content" style="background:#ffffff; border-radius:12px; width:90%; max-width:600px; padding:0; box-shadow:0 10px 25px rgba(0,0,0,0.15); overflow:hidden; border:1px solid #e2e8f0; font-family:'Montserrat', sans-serif;">
-        <div style="background:#1b3f66; color:#ffffff; padding:20px; display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="margin:0; font-size:16px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Enviar Correo Masivo Informativo</h3>
-            <button type="button" id="closeEmailModal" style="background:none; border:none; color:#ffffff; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
-        </div>
-        <form method="post" action="<?= e(url('/admin/inscripciones/enviar-correo')) ?>" style="padding:25px; display:flex; flex-direction:column; gap:16px;">
-            <input type="hidden" name="_csrf" value="<?= e(CSRF::token()) ?>">
-            <input type="hidden" name="curso_id" value="<?= (int)$filters['curso_id'] ?>">
-            
-            <!-- Pass current filters to preserve state on redirect -->
-            <input type="hidden" name="q" value="<?= e((string)$filters['q']) ?>">
-            <input type="hidden" name="search_in" value="<?= e((string)($filters['search_in'] ?? 'all')) ?>">
-            <input type="hidden" name="per_page" value="<?= (int)$perPage ?>">
-            <input type="hidden" name="page" value="<?= (int)$page ?>">
-
-            <div style="display:flex; flex-direction:column; gap:6px; text-align:left;">
-                <label style="font-size:11px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Curso Destinatario</label>
-                <input type="text" readonly value="<?= e($selectedCourseName) ?>" style="padding:10px; border-radius:6px; border:1px solid #cbd5e1; background:#f8fafc; color:#64748b; font-size:14px; font-weight:600; outline:none; cursor:default;">
-            </div>
-
-            <div style="display:flex; flex-direction:column; gap:6px; text-align:left;">
-                <label for="asunto" style="font-size:11px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Asunto del Correo</label>
-                <input type="text" id="asunto" name="asunto" required placeholder="Ej. Indicaciones de acceso para la evaluación" style="padding:10px; border-radius:6px; border:1px solid #cbd5e1; font-size:14px; color:#1e293b;">
-            </div>
-
-            <div style="display:flex; flex-direction:column; gap:6px; text-align:left;">
-                <label for="mensaje" style="font-size:11px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Mensaje / Cuerpo del Correo</label>
-                <textarea id="mensaje" name="mensaje" required rows="8" placeholder="Escriba el aviso aquí..." style="padding:10px; border-radius:6px; border:1px solid #cbd5e1; font-size:14px; color:#1e293b; resize:vertical; font-family:inherit;"></textarea>
-                <p style="margin:0; font-size:11px; color:#94a3b8; font-style:italic;">Se incluirá un saludo personalizado automático al inicio y un pie de firma institucional al final.</p>
-            </div>
-
-            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:10px; border-top:1px solid #f1f5f9; padding-top:20px;">
-                <button type="button" id="cancelEmailModal" class="btn btn-secondary btn-no-icon" style="padding:10px 20px; font-size:13px; font-weight:600;">Cancelar</button>
-                <button type="submit" class="btn btn-primary btn-no-icon" style="padding:10px 20px; font-size:13px; font-weight:600; background:#1b3f66; color:#ffffff;">Enviar a todos los inscritos</button>
-            </div>
-        </form>
-    </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
