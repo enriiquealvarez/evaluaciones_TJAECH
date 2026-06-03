@@ -60,13 +60,23 @@ $cssVersion = is_file($cssPath) ? (string)filemtime($cssPath) : (string)time();
             }
             const loader = document.getElementById('page-loader');
             if (loader) {
+                const textEl = document.getElementById('page-loader-text');
+                if (textEl) {
+                    textEl.textContent = 'Cargando, por favor espere...';
+                }
                 loader.classList.add('show');
             }
         });
         document.addEventListener('submit', (event) => {
             if (event.defaultPrevented) return;
+            const form = event.target;
             const loader = document.getElementById('page-loader');
             if (loader) {
+                const textEl = document.getElementById('page-loader-text');
+                if (textEl) {
+                    const customText = form.getAttribute('data-loader-text');
+                    textEl.textContent = customText || 'Procesando, por favor espere...';
+                }
                 loader.classList.add('show');
             }
         });
@@ -77,8 +87,11 @@ $authViews = ['admin/login', 'admin/forgot', 'admin/reset'];
 $isAuth = in_array($current, $authViews, true);
 ?>
 <body class="admin-body<?= $isAuth ? ' admin-auth' : '' ?><?= $current === 'admin/login' ? ' admin-login' : '' ?><?= $current === 'admin/forgot' ? ' admin-forgot' : '' ?>">
-<div class="page-loader" id="page-loader" aria-hidden="true">
-    <div class="spinner"></div>
+<div class="page-loader" id="page-loader" aria-hidden="true" style="z-index: 999999;">
+    <div style="display: flex; flex-direction: column; align-items: center; background: #ffffff; padding: 28px 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); border: 1px solid #e2e8f0;">
+        <div class="spinner"></div>
+        <div class="loader-text" id="page-loader-text" style="margin-top: 16px; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; color: #1b3f66; text-align: center; white-space: nowrap;">Procesando, por favor espere...</div>
+    </div>
 </div>
 <header class="site-header">
     <div class="container header-inner">

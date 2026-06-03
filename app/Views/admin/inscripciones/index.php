@@ -328,7 +328,7 @@
             <h3 style="margin:0; font-size:16px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Enviar Correo Masivo Informativo</h3>
             <button type="button" id="closeEmailModal" style="background:none; border:none; color:#ffffff; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
         </div>
-        <form method="post" action="<?= e(url('/admin/inscripciones/enviar-correo')) ?>" style="padding:25px; display:flex; flex-direction:column; gap:16px;">
+        <form method="post" action="<?= e(url('/admin/inscripciones/enviar-correo')) ?>" data-loader-text="Enviando correos informativos a los participantes. Por favor, espere..." style="padding:25px; display:flex; flex-direction:column; gap:16px;">
             <input type="hidden" name="_csrf" value="<?= e(CSRF::token()) ?>">
             <input type="hidden" name="curso_id" value="<?= (int)$filters['curso_id'] ?>">
             
