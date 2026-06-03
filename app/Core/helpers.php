@@ -71,13 +71,23 @@ function asset(string $path): string {
     }
 
     $docRoot = rtrim((string)($_SERVER['DOCUMENT_ROOT'] ?? ''), '/\\');
-    $rootFile = $docRoot !== '' ? $docRoot . str_replace('/', DIRECTORY_SEPARATOR, $path) : '';
-    $publicFile = $docRoot !== '' ? $docRoot . DIRECTORY_SEPARATOR . 'public' . str_replace('/', DIRECTORY_SEPARATOR, $path) : '';
-    $needsPublicPrefix = $docRoot !== ''
-        && !str_starts_with($path, '/public/')
-        && !str_contains($basePath, '/public')
-        && !file_exists($rootFile)
-        && file_exists($publicFile);
+    
+    // Strip query string and fragment for file existence checks
+    $cleanPath = parse_url($path, PHP_URL_PATH) ?? '';
+    
+    // Check if the file exists directly under the document root
+    $rootFile = $docRoot !== '' ? $docRoot . str_replace('/', DIRECTORY_SEPARATOR, $cleanPath) : '';
+    
+    // Check if the file exists inside public/ relative to the project root
+    $projectRoot = dirname(__DIR__, 2);
+    $projectPublicFile = $projectRoot . DIRECTORY_SEPARATOR . 'public' . str_replace('/', DIRECTORY_SEPARATOR, $cleanPath);
+
+    $needsPublicPrefix = false;
+    if ($docRoot !== '' && !str_starts_with($path, '/public/') && !str_contains($basePath, '/public')) {
+        if (!file_exists($rootFile) && file_exists($projectPublicFile)) {
+            $needsPublicPrefix = true;
+        }
+    }
 
     if ($needsPublicPrefix) {
         $path = '/public' . $path;

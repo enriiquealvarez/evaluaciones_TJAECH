@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // app/Core/Router.php
 class Router {
     private array $routes = [];
@@ -22,9 +22,17 @@ class Router {
 
     public function dispatch(string $method, string $uri): void {
         $path = parse_url($uri, PHP_URL_PATH);
+        
+        // Normalize trailing slash (e.g. /admin/ -> /admin, but keep basePath/)
+        $normalizedPath = $path;
+        $baseWithSlash = $this->basePath . '/';
+        if ($path !== '/' && $path !== $baseWithSlash && str_ends_with($path, '/')) {
+            $normalizedPath = rtrim($path, '/');
+        }
+
         $routes = $this->routes[$method] ?? [];
-        if (isset($routes[$path])) {
-            $routes[$path]();
+        if (isset($routes[$normalizedPath])) {
+            $routes[$normalizedPath]();
             return;
         }
         http_response_code(404);
