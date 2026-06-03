@@ -7,8 +7,8 @@
         </div>
         <div class="public-card public-card-pro">
             <div class="page-header">
-                <h3>iniciar evaluación.</h3>
-                <p>Evaluación en Curso: <strong><?= e($curso['nombre']) ?></strong></p>
+                <h3>Evaluación del Curso : <strong><?= e($curso['nombre']) ?></strong></h3>
+                <p>Iniciar</p>
                 <p style="margin-top: 6px; font-weight: bold; color: var(--magenta);">Tiempo estimado: 20 minutos.</p>
             </div>
 
