@@ -92,7 +92,7 @@ class InscripcionesController extends BaseController {
                 
                 $html = "<div style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;'>
                     <div style='background-color: #1b3f66; padding: 20px; color: #ffffff;'>
-                        <h2 style='margin: 0; font-size: 18px;'>Aviso Importante: {$curso['nombre']}</h2>
+                        <h2 style='margin: 0; font-size: 18px;'>Aviso importante: {$curso['nombre']}</h2>
                     </div>
                     <div style='padding: 25px;'>
                         <p style='margin-top: 0;'>Estimado(a) <strong>{$toName}</strong>,</p>

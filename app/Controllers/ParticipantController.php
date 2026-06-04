@@ -348,7 +348,7 @@ class ParticipantController extends BaseController {
 
         $this->sendParticipantRegistrationEmail($nombre, $correo, $curso, $telefono);
 
-        Session::flash('success', 'Registro al curso completado, las indicaciones y recomendaciones del curso fueron enviadas a su correo electrónico. Cuando el curso tenga evaluación, podrá ingresar con su correo y número telefónico.');
+        Session::flash('success', 'Registro al curso completado. Las indicaciones, recomendaciones y archivos adjuntos del curso fueron enviados a su correo electrónico. Cuando el curso tenga evaluación, podrá ingresar con su correo y número telefónico.');
         redirect('/curso/registro?curso_id=' . $cursoId);
     }
 
@@ -357,26 +357,46 @@ class ParticipantController extends BaseController {
             return;
         }
 
+        $attachments = [];
+
+        // Check if default participant guide exists
         $guidePath = $this->participantGuideFilePath();
-        if (!is_file($guidePath)) {
-            return;
+        if (is_file($guidePath)) {
+            $attachments[] = [
+                'path' => $guidePath,
+                'filename' => 'indicaciones-participantes-capacitaciones.pdf',
+                'mime' => 'application/pdf',
+            ];
+        }
+
+        // Fetch course-specific attachments
+        $cursoId = (int)($curso['id'] ?? 0);
+        if ($cursoId > 0) {
+            $cursoArchivos = CursoArchivo::getByCurso($cursoId);
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/adjuntos/';
+            foreach ($cursoArchivos as $archivo) {
+                $filePath = $uploadDir . $archivo['nombre_servidor'];
+                if (is_file($filePath)) {
+                    $attachments[] = [
+                        'path' => $filePath,
+                        'filename' => $archivo['nombre_original'],
+                        'mime' => mime_content_type($filePath) ?: 'application/octet-stream'
+                    ];
+                }
+            }
         }
 
         try {
             $mailer = new Mailer();
-            $subject = 'Confirmacion de registro - Programa de capacitacion TJAECH';
+            $subject = 'Confirmación de registro - Programa de capacitación TJAECH';
             $html = $this->buildParticipantRegistrationEmail(
                 $name,
-                (string)($curso['nombre'] ?? 'Programa de capacitaciÃ³n'),
+                (string)($curso['nombre'] ?? 'Programa de capacitación'),
                 $email,
                 $telefono
             );
-            $text = "Hola {$name},\n\nTu registro al curso \"" . ($curso['nombre'] ?? 'Programa de capacitación') . "\" ha sido recibido exitosamente.\nAdjuntamos el documento con indicaciones y recomendaciones para tu participación, te sugerimos revisarlo antes del curso.\n\nCorreo registrado: {$email}\nTelefono registrado: {$telefono}\nContacto: ija@tjaech.gob.mx\n\nTribunal de Justicia Administrativa del Estado de Chiapas";
-            $mailer->send($email, $name, $subject, $html, $text, [[
-                'path' => $guidePath,
-                'filename' => 'indicaciones-participantes-capacitaciones.pdf',
-                'mime' => 'application/pdf',
-            ]], [
+            $text = "Hola {$name},\n\nTu registro al curso \"" . ($curso['nombre'] ?? 'Programa de capacitación') . "\" ha sido recibido exitosamente.\nAdjuntamos la información e indicaciones para tu participación, te sugerimos revisarla antes del curso.\n\nCorreo registrado: {$email}\nTeléfono registrado: {$telefono}\nContacto: ija@tjaech.gob.mx\n\nTribunal de Justicia Administrativa del Estado de Chiapas";
+            $mailer->send($email, $name, $subject, $html, $text, $attachments, [
                 'from_name' => 'Instituto de Justicia Administrativa',
                 'reply_to_email' => 'ija@tjaech.gob.mx',
                 'reply_to_name' => 'Instituto de Justicia Administrativa',
@@ -398,7 +418,7 @@ class ParticipantController extends BaseController {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Confirmacion de registro</title>
+  <title>Confirmación de registro</title>
 </head>
 <body style="margin:0;background:#f5f6f9;font-family:Arial,sans-serif;color:#1a1a1a;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:24px 0;">
@@ -407,7 +427,7 @@ class ParticipantController extends BaseController {
         <table role="presentation" width="560" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e6d7b3;">
           <tr>
             <td style="background:#1b3f66;color:#fff;padding:18px 24px;">
-              <strong>Sistema de Evaluacion de Capacitaciones TJAECH</strong><br>
+              <strong>Sistema de Evaluación de Capacitaciones TJAECH</strong><br>
               <span style="font-size:12px;opacity:0.9;">Tribunal de Justicia Administrativa del Estado de Chiapas</span>
             </td>
           </tr>
@@ -416,21 +436,21 @@ class ParticipantController extends BaseController {
               <h2 style="margin:0 0 8px 0;">Registro recibido correctamente</h2>
               <p style="margin:0 0 12px 0;">Hola {$safeName},</p>
               <p style="margin:0 0 12px 0;">Tu registro al curso "<strong>{$safeCourse}</strong>" ha sido recibido exitosamente.</p>
-              <p style="margin:0 0 12px 0;">Adjuntamos el documento con indicaciones y recomendaciones para tu participación, te sugerimos revisarlo antes del curso.</p>
+              <p style="margin:0 0 12px 0;">Adjuntamos a este correo la información e indicaciones correspondientes para tu participación, te sugerimos revisarlas antes del curso.</p>
             </td>
           </tr>
           <tr>
             <td style="padding:8px 24px 16px;">
               <div style="border:1px solid #e6d7b3;border-radius:12px;padding:14px 16px;background:#faf7ef;">
                 <p style="margin:0 0 8px 0;"><strong>Correo registrado:</strong> {$safeEmail}</p>
-                <p style="margin:0 0 8px 0;"><strong>Telefono registrado:</strong> {$safeTelefono}</p>
+                <p style="margin:0 0 8px 0;"><strong>Teléfono registrado:</strong> {$safeTelefono}</p>
                 <p style="margin:0;"><strong>Contacto:</strong> ija@tjaech.gob.mx</p>
               </div>
             </td>
           </tr>
           <tr>
             <td style="padding:0 24px 18px;">
-              <p style="margin:0;font-size:13px;color:#334;">Conserva este mensaje para futuras referencias sobre tu participacion.</p>
+              <p style="margin:0;font-size:13px;color:#334;">Conserva este mensaje para futuras referencias sobre tu participación.</p>
             </td>
           </tr>
           <tr>

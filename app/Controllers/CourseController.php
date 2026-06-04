@@ -13,6 +13,7 @@ class CourseController extends BaseController {
         AuthMiddleware::requireRole('courses');
         $this->render('admin/cursos/form', [
             'curso' => null,
+            'adjuntos' => [],
             'errors' => Session::flash('errors') ?? [],
             'old' => Session::flash('old') ?? []
         ], 'admin');
@@ -51,7 +52,7 @@ class CourseController extends BaseController {
             }
         }
 
-        Curso::create([
+        $cursoId = Curso::create([
             'nombre' => trim($_POST['nombre']),
             'descripcion' => trim($_POST['descripcion'] ?? ''),
             'fecha_inicio' => $_POST['fecha_inicio'] ?: null,
@@ -61,6 +62,29 @@ class CourseController extends BaseController {
             'cupo_maximo' => (int)($_POST['cupo_maximo'] ?? 0),
             'documento_bases' => $documentoBases
         ]);
+
+        // Process attachments
+        if (isset($_FILES['adjuntos']) && is_array($_FILES['adjuntos']['name'])) {
+            $uploadDirAdjuntos = __DIR__ . '/../../public/uploads/adjuntos/';
+            if (!is_dir($uploadDirAdjuntos)) {
+                mkdir($uploadDirAdjuntos, 0755, true);
+            }
+            foreach ($_FILES['adjuntos']['name'] as $i => $fileName) {
+                if ($_FILES['adjuntos']['error'][$i] === UPLOAD_ERR_OK) {
+                    $fileTmpPath = $_FILES['adjuntos']['tmp_name'][$i];
+                    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                    $allowed = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png', 'zip', 'txt'];
+                    if (in_array($fileExtension, $allowed)) {
+                        $newFileName = uniqid('adjunto_') . '.' . $fileExtension;
+                        $destPath = $uploadDirAdjuntos . $newFileName;
+                        if (move_uploaded_file($fileTmpPath, $destPath)) {
+                            CursoArchivo::create($cursoId, $fileName, $newFileName);
+                        }
+                    }
+                }
+            }
+        }
+
         Session::flash('success', 'Curso creado.');
         redirect('/admin/cursos');
     }
@@ -72,8 +96,10 @@ class CourseController extends BaseController {
         if (!$curso) {
             redirect('/admin/cursos');
         }
+        $adjuntos = CursoArchivo::getByCurso($id);
         $this->render('admin/cursos/form', [
             'curso' => $curso,
+            'adjuntos' => $adjuntos,
             'errors' => Session::flash('errors') ?? [],
             'old' => Session::flash('old') ?? []
         ], 'admin');
@@ -118,6 +144,44 @@ class CourseController extends BaseController {
             }
         }
 
+        // Process file deletions if requested
+        if (isset($_POST['eliminar_adjuntos']) && is_array($_POST['eliminar_adjuntos'])) {
+            $uploadDirAdjuntos = __DIR__ . '/../../public/uploads/adjuntos/';
+            foreach ($_POST['eliminar_adjuntos'] as $adjuntoId) {
+                $adjuntoId = (int)$adjuntoId;
+                $adjunto = CursoArchivo::find($adjuntoId);
+                if ($adjunto && (int)$adjunto['curso_id'] === $id) {
+                    $filePath = $uploadDirAdjuntos . $adjunto['nombre_servidor'];
+                    if (is_file($filePath)) {
+                        @unlink($filePath);
+                    }
+                    CursoArchivo::delete($adjuntoId);
+                }
+            }
+        }
+
+        // Process new attachments
+        if (isset($_FILES['adjuntos']) && is_array($_FILES['adjuntos']['name'])) {
+            $uploadDirAdjuntos = __DIR__ . '/../../public/uploads/adjuntos/';
+            if (!is_dir($uploadDirAdjuntos)) {
+                mkdir($uploadDirAdjuntos, 0755, true);
+            }
+            foreach ($_FILES['adjuntos']['name'] as $i => $fileName) {
+                if ($_FILES['adjuntos']['error'][$i] === UPLOAD_ERR_OK) {
+                    $fileTmpPath = $_FILES['adjuntos']['tmp_name'][$i];
+                    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                    $allowed = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png', 'zip', 'txt'];
+                    if (in_array($fileExtension, $allowed)) {
+                        $newFileName = uniqid('adjunto_') . '.' . $fileExtension;
+                        $destPath = $uploadDirAdjuntos . $newFileName;
+                        if (move_uploaded_file($fileTmpPath, $destPath)) {
+                            CursoArchivo::create($id, $fileName, $newFileName);
+                        }
+                    }
+                }
+            }
+        }
+
         Curso::update($id, [
             'nombre' => trim($_POST['nombre']),
             'descripcion' => trim($_POST['descripcion'] ?? ''),
@@ -140,6 +204,16 @@ class CourseController extends BaseController {
         }
         $id = (int)($_POST['id'] ?? 0);
         if ($id) {
+            // Delete attachments physically and from DB
+            $adjuntos = CursoArchivo::getByCurso($id);
+            $uploadDirAdjuntos = __DIR__ . '/../../public/uploads/adjuntos/';
+            foreach ($adjuntos as $adjunto) {
+                $filePath = $uploadDirAdjuntos . $adjunto['nombre_servidor'];
+                if (is_file($filePath)) {
+                    @unlink($filePath);
+                }
+                CursoArchivo::delete((int)$adjunto['id']);
+            }
             Curso::delete($id);
         }
         Session::flash('success', 'Curso eliminado.');

@@ -610,9 +610,9 @@ $colectivos = [
                     </svg>
                 </div>
                 <div>
-                    <h4 style="margin: 0; color: #1e3a8a; font-size: 1.05rem; font-weight: 700;">Bases y Recomendaciones del Curso</h4>
+                    <h4 style="margin: 0; color: #1e3a8a; font-size: 1.05rem; font-weight: 700;">Bases, indicaciones y recomendaciones.</h4>
                     <p style="margin: 4px 0 0; color: #1e40af; font-size: 0.88rem; line-height: 1.4;">
-                        Antes de realizar su registro, le recomendamos descargar y leer los lineamientos del curso.
+                        Antes de registrarse, le recomendamos descargar y leer información proporcionada sobre el curso.
                     </p>
                     <div style="margin-top: 10px;">
                         <a href="<?= e(asset('/uploads/bases/' . $curso['documento_bases'])) ?>" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #1e40af; color: #ffffff; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 0.88rem; box-shadow: 0 4px 6px -1px rgba(30,58,138,0.3); transition: background 0.2s;">
@@ -945,11 +945,11 @@ document.addEventListener('DOMContentLoaded', function () {
           setValue(exactMatch);
         } else if (typedValue === '') {
           hiddenInput.value = '';
-          searchInput.setCustomValidity('Seleccione una institucion del listado.');
+          searchInput.setCustomValidity('Seleccione una institución del listado.');
           closeResults();
         } else if (hiddenInput.value !== typedValue) {
           hiddenInput.value = '';
-          searchInput.setCustomValidity('Seleccione una institucion valida del listado.');
+          searchInput.setCustomValidity('Seleccione una institución válida del listado.');
           closeResults();
         }
       }, 120);
@@ -964,7 +964,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!exactMatch) {
           hiddenInput.value = '';
-          searchInput.setCustomValidity('Seleccione una institucion valida del listado.');
+          searchInput.setCustomValidity('Seleccione una institución válida del listado.');
           searchInput.reportValidity();
           event.preventDefault();
           return;

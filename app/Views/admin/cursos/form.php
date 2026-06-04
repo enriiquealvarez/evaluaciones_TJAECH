@@ -56,6 +56,28 @@
             <?php endif; ?>
         </label>
 
+        <label>Archivos adjuntos para el correo de registro (uno o más archivos)
+            <input type="file" name="adjuntos[]" multiple>
+            <?php if ($curso && !empty($adjuntos)): ?>
+                <div style="margin-top: 10px; font-size: 13px;">
+                    <p style="font-weight: bold; margin-bottom: 5px;">Archivos adjuntos actuales (seleccione para eliminar):</p>
+                    <ul style="list-style: none; padding-left: 0;">
+                        <?php foreach ($adjuntos as $adjunto): ?>
+                            <li style="margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
+                                <label style="display: inline-flex; align-items: center; gap: 5px; margin: 0; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" name="eliminar_adjuntos[]" value="<?= (int)$adjunto['id'] ?>"> 
+                                    <span style="color: #c53030; font-weight: 600;">Eliminar</span>
+                                </label>
+                                <a href="<?= e(asset('/uploads/adjuntos/' . $adjunto['nombre_servidor'])) ?>" target="_blank" style="color: #1b3f66; font-weight: 600; text-decoration: underline;">
+                                    <?= e($adjunto['nombre_original']) ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+        </label>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Guardar</button>
             <a class="btn btn-secondary" href="<?= e(url('/admin/cursos')) ?>">Cancelar</a>
