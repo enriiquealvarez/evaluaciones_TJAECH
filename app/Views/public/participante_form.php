@@ -9,7 +9,7 @@
             <div class="page-header">
                 <h3>Evaluación del Curso : <strong><?= e($curso['nombre']) ?></strong></h3>
                 <p>Iniciar</p>
-                <p style="margin-top: 6px; font-weight: bold; color: var(--magenta);">Tiempo estimado: 20 minutos.</p>
+                <p style="margin-top: 6px; font-weight: bold; color: var(--magenta);">Tiempo estimado: 30 minutos.</p>
             </div>
 
             <?php if (!empty($errors)): ?>
@@ -58,7 +58,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
                         <h3 style="margin: 0;">Paso 2: Evaluaci&oacute;n</h3>
                         <div id="timerContainer" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid #cbd5e1; border-radius: 20px; background: #f8fafc; color: #1b446e; font-weight: bold; font-size: 0.95rem; transition: all 0.3s ease;">
-                            <span>⏱️ Tiempo restante: <span id="timerDisplay">20:00</span></span>
+                            <span>⏱️ Tiempo restante: <span id="timerDisplay">30:00</span></span>
                         </div>
                     </div>
                     <div class="progress" id="progressBar"><span></span></div>

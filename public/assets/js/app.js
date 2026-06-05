@@ -147,7 +147,7 @@
         remaining = 0;
         updateDisplay();
         clearInterval(timerInterval);
-        alert('El tiempo de 20 minutos para responder la evaluación ha concluido. Sus respuestas se enviarán automáticamente.');
+        alert('El tiempo de 30 minutos para responder la evaluación ha concluido. Sus respuestas se enviarán automáticamente.');
         form.submit();
       } else {
         updateDisplay();
@@ -181,7 +181,7 @@
       preguntas.hidden = false;
       registro.hidden = true;
       window.scrollTo({ top: preguntas.offsetTop - 20, behavior: 'smooth' });
-      startTimer(1200);
+      startTimer(1800);
     });
   }
 
