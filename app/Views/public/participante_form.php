@@ -115,4 +115,4 @@
     </div>
 </section>
 
-<script src="<?= e(asset('/assets/js/app.js')) ?>"></script>
+<script src="<?= e(asset('/assets/js/app.js')) ?>?v=30m"></script>
