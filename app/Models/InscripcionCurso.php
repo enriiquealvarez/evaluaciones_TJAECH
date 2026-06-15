@@ -20,6 +20,7 @@ class InscripcionCurso {
                     correo VARCHAR(120) NOT NULL,
                     telefono VARCHAR(30) NOT NULL,
                     institucion VARCHAR(200) NOT NULL,
+                    institucion_otra VARCHAR(200) NULL,
                     cargo_puesto VARCHAR(160) NOT NULL,
                     grado_estudios VARCHAR(80) NOT NULL,
                     grado_otro VARCHAR(160) NULL,
@@ -30,7 +31,7 @@ class InscripcionCurso {
                     UNIQUE KEY uk_inscripcion_curso_correo (curso_id, correo),
                     UNIQUE KEY uk_inscripcion_curso_telefono (curso_id, telefono),
                     INDEX idx_inscripciones_curso (curso_id)
-                ) ENGINE=InnoDB"
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
             );
         } else {
             // Ensure the validation column exists

@@ -377,10 +377,32 @@ class ParticipantController extends BaseController {
             foreach ($cursoArchivos as $archivo) {
                 $filePath = $uploadDir . $archivo['nombre_servidor'];
                 if (is_file($filePath)) {
+                    $mimeType = 'application/octet-stream';
+                    if (function_exists('mime_content_type')) {
+                        $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
+                    } else {
+                        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+                        $mimes = [
+                            'pdf' => 'application/pdf',
+                            'doc' => 'application/msword',
+                            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            'xls' => 'application/vnd.ms-excel',
+                            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'png' => 'image/png',
+                            'jpg' => 'image/jpeg',
+                            'jpeg' => 'image/jpeg',
+                            'gif' => 'image/gif',
+                            'txt' => 'text/plain',
+                            'zip' => 'application/zip',
+                        ];
+                        if (isset($mimes[$ext])) {
+                            $mimeType = $mimes[$ext];
+                        }
+                    }
                     $attachments[] = [
                         'path' => $filePath,
                         'filename' => $archivo['nombre_original'],
-                        'mime' => mime_content_type($filePath) ?: 'application/octet-stream'
+                        'mime' => $mimeType
                     ];
                 }
             }
