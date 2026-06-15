@@ -55,8 +55,8 @@ class CourseController extends BaseController {
         $cursoId = Curso::create([
             'nombre' => trim($_POST['nombre']),
             'descripcion' => trim($_POST['descripcion'] ?? ''),
-            'fecha_inicio' => $_POST['fecha_inicio'] ?: null,
-            'fecha_fin' => $_POST['fecha_fin'] ?: null,
+            'fecha_inicio' => parseDate($_POST['fecha_inicio'] ?? ''),
+            'fecha_fin' => parseDate($_POST['fecha_fin'] ?? ''),
             'activo' => isset($_POST['activo']) ? 1 : 0,
             'tiene_cupo' => isset($_POST['tiene_cupo']) ? 1 : 0,
             'cupo_maximo' => (int)($_POST['cupo_maximo'] ?? 0),
@@ -185,8 +185,8 @@ class CourseController extends BaseController {
         Curso::update($id, [
             'nombre' => trim($_POST['nombre']),
             'descripcion' => trim($_POST['descripcion'] ?? ''),
-            'fecha_inicio' => $_POST['fecha_inicio'] ?: null,
-            'fecha_fin' => $_POST['fecha_fin'] ?: null,
+            'fecha_inicio' => parseDate($_POST['fecha_inicio'] ?? ''),
+            'fecha_fin' => parseDate($_POST['fecha_fin'] ?? ''),
             'activo' => isset($_POST['activo']) ? 1 : 0,
             'tiene_cupo' => isset($_POST['tiene_cupo']) ? 1 : 0,
             'cupo_maximo' => (int)($_POST['cupo_maximo'] ?? 0),

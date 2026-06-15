@@ -95,3 +95,24 @@ function asset(string $path): string {
 
     return url($path);
 }
+
+function parseDate(?string $dateStr): ?string {
+    if (!$dateStr || trim($dateStr) === '') {
+        return null;
+    }
+    $dateStr = trim($dateStr);
+    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateStr)) {
+        return $dateStr;
+    }
+    if (preg_match('/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/', $dateStr, $matches)) {
+        $day = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
+        $month = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
+        $year = $matches[3];
+        return "$year-$month-$day";
+    }
+    $timestamp = strtotime($dateStr);
+    if ($timestamp !== false) {
+        return date('Y-m-d', $timestamp);
+    }
+    return null;
+}
