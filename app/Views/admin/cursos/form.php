@@ -41,7 +41,7 @@
         </label>
         <label id="cupo_maximo_container" style="<?= (int)($old['tiene_cupo'] ?? ($curso['tiene_cupo'] ?? 0)) === 1 ? '' : 'display: none;' ?>">
             Número máximo de registros
-            <input type="number" name="cupo_maximo" min="1" value="<?= e($old['cupo_maximo'] ?? ($curso['cupo_maximo'] ?? '')) ?>">
+            <input type="number" name="cupo_maximo" id="cupo_maximo" min="1" value="<?= e($old['cupo_maximo'] ?? ($curso['cupo_maximo'] ?? '')) ?>" <?= (int)($old['tiene_cupo'] ?? ($curso['tiene_cupo'] ?? 0)) === 1 ? '' : 'disabled' ?>>
         </label>
         
         <label>Documento de Recomendaciones / Bases (PDF o JPG)
@@ -89,10 +89,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     var checkbox = document.getElementById('tiene_cupo');
     var container = document.getElementById('cupo_maximo_container');
+    var input = document.getElementById('cupo_maximo');
     
     if (checkbox && container) {
         checkbox.addEventListener('change', function() {
-            container.style.display = this.checked ? 'block' : 'none';
+            if (this.checked) {
+                container.style.display = 'block';
+                if (input) input.removeAttribute('disabled');
+            } else {
+                container.style.display = 'none';
+                if (input) input.setAttribute('disabled', 'disabled');
+            }
         });
     }
 });
