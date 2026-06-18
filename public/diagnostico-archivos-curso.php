@@ -27,7 +27,7 @@ try {
     ]);
     
     // Obtener todos los cursos
-    $stmt = $pdo->query("SELECT id, nombre FROM curso ORDER BY nombre");
+    $stmt = $pdo->query("SELECT id, nombre FROM cursos ORDER BY nombre");
     $cursos = $stmt->fetchAll();
     
     if (empty($cursos)) {
