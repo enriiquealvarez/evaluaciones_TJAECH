@@ -95,6 +95,7 @@ $router->post('/admin/reset', fn() => $auth->resetPassword());
 $router->post('/admin/logout', fn() => $auth->logout());
 
 $router->get('/admin', fn() => $dashboard->index());
+$router->get('/admin/limpiar-adjuntos', fn() => $dashboard->cleanupAttachments());
 $router->get('/admin/cursos', fn() => $course->index());
 $router->get('/admin/cursos/crear', fn() => $course->create());
 $router->post('/admin/cursos/guardar', fn() => $course->store());

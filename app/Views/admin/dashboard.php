@@ -30,6 +30,7 @@
 
     <div class="dashboard-title-wrap">
         <h2>Tablero</h2>
+        <a href="<?= e(url('/admin/limpiar-adjuntos')) ?>" class="btn btn-warning btn-sm" title="Limpiar archivos adjuntos duplicados">🧹 Limpiar adjuntos</a>
     </div>
 
     <div class="dashboard-kpis">
