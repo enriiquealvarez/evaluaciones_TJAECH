@@ -56,6 +56,16 @@
             <?php endif; ?>
         </label>
 
+        <label class="checkbox">
+            <input type="checkbox" name="enviar_indicaciones" <?= (int)($old['enviar_indicaciones'] ?? ($curso['enviar_indicaciones'] ?? 1)) === 1 ? 'checked' : '' ?>>
+            Enviar indicaciones para participantes al correo de confirmación de registro
+        </label>
+
+        <label class="checkbox">
+            <input type="checkbox" name="enviar_documento_bases" <?= (int)($old['enviar_documento_bases'] ?? ($curso['enviar_documento_bases'] ?? 1)) === 1 ? 'checked' : '' ?>>
+            Enviar documento de bases al correo de confirmación de registro
+        </label>
+
         <label>Archivos adjuntos para el correo de registro (uno o más archivos)
             <input type="file" name="adjuntos[]" multiple>
             <?php if ($curso && !empty($adjuntos)): ?>

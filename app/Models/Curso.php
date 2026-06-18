@@ -23,6 +23,16 @@ class Curso {
             DB::conn()->exec("ALTER TABLE cursos ADD COLUMN documento_bases VARCHAR(255) NULL AFTER cupo_maximo");
         }
 
+        $colEnviarIndicaciones = DB::conn()->query("SHOW COLUMNS FROM cursos LIKE 'enviar_indicaciones'")->fetch();
+        if (!$colEnviarIndicaciones) {
+            DB::conn()->exec("ALTER TABLE cursos ADD COLUMN enviar_indicaciones TINYINT(1) NOT NULL DEFAULT 1 AFTER documento_bases");
+        }
+
+        $colEnviarBases = DB::conn()->query("SHOW COLUMNS FROM cursos LIKE 'enviar_documento_bases'")->fetch();
+        if (!$colEnviarBases) {
+            DB::conn()->exec("ALTER TABLE cursos ADD COLUMN enviar_documento_bases TINYINT(1) NOT NULL DEFAULT 1 AFTER enviar_indicaciones");
+        }
+
         $ready = true;
     }
 
@@ -49,7 +59,7 @@ class Curso {
     public static function create(array $data): int {
         self::ensureSchema();
         $stmt = DB::conn()->prepare(
-            'INSERT INTO cursos (nombre, descripcion, fecha_inicio, fecha_fin, activo, terminado, tiene_cupo, cupo_maximo, documento_bases, created_at) VALUES (?,?,?,?,?,?,?,?,?,NOW())'
+            'INSERT INTO cursos (nombre, descripcion, fecha_inicio, fecha_fin, activo, terminado, tiene_cupo, cupo_maximo, documento_bases, enviar_indicaciones, enviar_documento_bases, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,NOW())'
         );
         $stmt->execute([
             $data['nombre'],
@@ -60,7 +70,9 @@ class Curso {
             0,
             $data['tiene_cupo'] ?? 0,
             $data['cupo_maximo'] ?? 0,
-            $data['documento_bases'] ?? null
+            $data['documento_bases'] ?? null,
+            $data['enviar_indicaciones'] ?? 1,
+            $data['enviar_documento_bases'] ?? 1
         ]);
         return (int)DB::conn()->lastInsertId();
     }
@@ -68,7 +80,7 @@ class Curso {
     public static function update(int $id, array $data): void {
         self::ensureSchema();
         $stmt = DB::conn()->prepare(
-            'UPDATE cursos SET nombre=?, descripcion=?, fecha_inicio=?, fecha_fin=?, activo=?, tiene_cupo=?, cupo_maximo=?, documento_bases=? WHERE id=?'
+            'UPDATE cursos SET nombre=?, descripcion=?, fecha_inicio=?, fecha_fin=?, activo=?, tiene_cupo=?, cupo_maximo=?, documento_bases=?, enviar_indicaciones=?, enviar_documento_bases=? WHERE id=?'
         );
         $stmt->execute([
             $data['nombre'],
@@ -79,6 +91,8 @@ class Curso {
             $data['tiene_cupo'] ?? 0,
             $data['cupo_maximo'] ?? 0,
             $data['documento_bases'] ?? null,
+            $data['enviar_indicaciones'] ?? 1,
+            $data['enviar_documento_bases'] ?? 1,
             $id
         ]);
     }

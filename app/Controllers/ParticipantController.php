@@ -359,18 +359,32 @@ class ParticipantController extends BaseController {
 
         $attachments = [];
 
-        // Check if default participant guide exists
-        $guidePath = $this->participantGuideFilePath();
-        if (is_file($guidePath)) {
-            $attachments[] = [
-                'path' => $guidePath,
-                'filename' => 'indicaciones-participantes-capacitaciones.pdf',
-                'mime' => 'application/pdf',
-            ];
+        // Check if default participant guide exists and should be sent
+        if ((int)($curso['enviar_indicaciones'] ?? 1) === 1) {
+            $guidePath = $this->participantGuideFilePath();
+            if (is_file($guidePath)) {
+                $attachments[] = [
+                    'path' => $guidePath,
+                    'filename' => 'indicaciones-participantes-capacitaciones.pdf',
+                    'mime' => 'application/pdf',
+                ];
+            }
+        }
+
+        // Add curso documento_bases if should be sent
+        $cursoId = (int)($curso['id'] ?? 0);
+        if ($cursoId > 0 && (int)($curso['enviar_documento_bases'] ?? 1) === 1 && !empty($curso['documento_bases'])) {
+            $basesPath = dirname(__DIR__, 2) . '/public/uploads/bases/' . $curso['documento_bases'];
+            if (is_file($basesPath)) {
+                $attachments[] = [
+                    'path' => $basesPath,
+                    'filename' => $curso['documento_bases'],
+                    'mime' => 'application/pdf'
+                ];
+            }
         }
 
         // Fetch course-specific attachments (only the most recent version of each file)
-        $cursoId = (int)($curso['id'] ?? 0);
         if ($cursoId > 0) {
             // Use getLatestUniqueByNombre to get ONLY the most recent version of each file name
             $cursoArchivos = CursoArchivo::getLatestUniqueByNombre($cursoId);
