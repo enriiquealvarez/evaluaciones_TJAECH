@@ -61,7 +61,6 @@ class CourseController extends BaseController {
             'tiene_cupo' => isset($_POST['tiene_cupo']) ? 1 : 0,
             'cupo_maximo' => (int)($_POST['cupo_maximo'] ?? 0),
             'documento_bases' => $documentoBases,
-            'enviar_indicaciones' => isset($_POST['enviar_indicaciones']) ? 1 : 0,
             'enviar_documento_bases' => isset($_POST['enviar_documento_bases']) ? 1 : 0
         ]);
 
@@ -193,7 +192,6 @@ class CourseController extends BaseController {
             'tiene_cupo' => isset($_POST['tiene_cupo']) ? 1 : 0,
             'cupo_maximo' => (int)($_POST['cupo_maximo'] ?? 0),
             'documento_bases' => $documentoBases,
-            'enviar_indicaciones' => isset($_POST['enviar_indicaciones']) ? 1 : 0,
             'enviar_documento_bases' => isset($_POST['enviar_documento_bases']) ? 1 : 0
         ]);
         
