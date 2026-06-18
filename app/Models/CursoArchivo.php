@@ -39,6 +39,37 @@ class CursoArchivo {
         $row = $stmt->fetch();
         return $row ?: null;
     }
+
+    public static function getLatestUniqueByNombre(int $cursoId): array {
+        self::ensureSchema();
+        // Get only the most recent version of each unique nombre_original
+        $stmt = DB::conn()->prepare('
+            SELECT DISTINCT ON (nombre_original) *
+            FROM curso_archivos
+            WHERE curso_id = ?
+            ORDER BY nombre_original, created_at DESC
+        ');
+        
+        try {
+            $stmt->execute([$cursoId]);
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            // DISTINCT ON is not supported in MySQL, use subquery instead
+            $stmt = DB::conn()->prepare('
+                SELECT * FROM curso_archivos ca1
+                WHERE curso_id = ? AND id = (
+                    SELECT id FROM curso_archivos ca2
+                    WHERE ca2.curso_id = ca1.curso_id
+                    AND ca2.nombre_original = ca1.nombre_original
+                    ORDER BY ca2.created_at DESC
+                    LIMIT 1
+                )
+                ORDER BY created_at DESC
+            ');
+            $stmt->execute([$cursoId]);
+            return $stmt->fetchAll();
+        }
+    }
     public static function cleanupDuplicates(int $cursoId): int {
         self::ensureSchema();
         // Find all duplicates by nombre_original
