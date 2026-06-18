@@ -43,31 +43,40 @@ class CursoArchivo {
     public static function getLatestUniqueByNombre(int $cursoId): array {
         self::ensureSchema();
         // Get only the most recent version of each unique nombre_original
-        $stmt = DB::conn()->prepare('
-            SELECT DISTINCT ON (nombre_original) *
-            FROM curso_archivos
-            WHERE curso_id = ?
-            ORDER BY nombre_original, created_at DESC
-        ');
+        // Using subquery for MySQL compatibility
+        $query = "
+            SELECT ca.* FROM curso_archivos ca
+            INNER JOIN (
+                SELECT nombre_original, MAX(created_at) as latest_date
+                FROM curso_archivos
+                WHERE curso_id = ?
+                GROUP BY nombre_original
+            ) latest ON ca.nombre_original = latest.nombre_original 
+            AND ca.created_at = latest.latest_date
+            AND ca.curso_id = ?
+            ORDER BY ca.created_at DESC
+        ";
         
         try {
-            $stmt->execute([$cursoId]);
+            $stmt = DB::conn()->prepare($query);
+            $stmt->execute([$cursoId, $cursoId]);
             return $stmt->fetchAll();
-        } catch (\PDOException $e) {
-            // DISTINCT ON is not supported in MySQL, use subquery instead
-            $stmt = DB::conn()->prepare('
-                SELECT * FROM curso_archivos ca1
-                WHERE curso_id = ? AND id = (
-                    SELECT id FROM curso_archivos ca2
-                    WHERE ca2.curso_id = ca1.curso_id
-                    AND ca2.nombre_original = ca1.nombre_original
-                    ORDER BY ca2.created_at DESC
-                    LIMIT 1
-                )
-                ORDER BY created_at DESC
-            ');
+        } catch (\Exception $e) {
+            // Fallback: get all and filter in PHP
+            $stmt = DB::conn()->prepare('SELECT * FROM curso_archivos WHERE curso_id = ? ORDER BY created_at DESC');
             $stmt->execute([$cursoId]);
-            return $stmt->fetchAll();
+            $all = $stmt->fetchAll();
+            
+            $seen = [];
+            $result = [];
+            foreach ($all as $file) {
+                $name = $file['nombre_original'];
+                if (!isset($seen[$name])) {
+                    $seen[$name] = true;
+                    $result[] = $file;
+                }
+            }
+            return $result;
         }
     }
     public static function cleanupDuplicates(int $cursoId): int {
