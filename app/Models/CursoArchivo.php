@@ -22,9 +22,22 @@ class CursoArchivo {
 
     public static function getByCurso(int $cursoId): array {
         self::ensureSchema();
-        $stmt = DB::conn()->prepare('SELECT * FROM curso_archivos WHERE curso_id = ? ORDER BY created_at ASC');
+        $stmt = DB::conn()->prepare('SELECT * FROM curso_archivos WHERE curso_id = ? ORDER BY created_at DESC');
         $stmt->execute([$cursoId]);
         return $stmt->fetchAll();
+    }
+
+    public static function getLatestByName(int $cursoId, string $nombreOriginal): ?array {
+        self::ensureSchema();
+        $stmt = DB::conn()->prepare('
+            SELECT * FROM curso_archivos 
+            WHERE curso_id = ? AND nombre_original = ? 
+            ORDER BY created_at DESC 
+            LIMIT 1
+        ');
+        $stmt->execute([$cursoId, $nombreOriginal]);
+        $row = $stmt->fetch();
+        return $row ?: null;
     }
 
     public static function create(int $cursoId, string $nombreOriginal, string $nombreServidor): int {

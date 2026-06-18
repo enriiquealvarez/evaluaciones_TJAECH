@@ -369,12 +369,23 @@ class ParticipantController extends BaseController {
             ];
         }
 
-        // Fetch course-specific attachments
+        // Fetch course-specific attachments (only the most recent version of each file)
         $cursoId = (int)($curso['id'] ?? 0);
         if ($cursoId > 0) {
             $cursoArchivos = CursoArchivo::getByCurso($cursoId);
             $uploadDir = dirname(__DIR__, 2) . '/public/uploads/adjuntos/';
+            
+            // Track which files we've already added (only add latest version of each name)
+            $addedFiles = [];
+            
             foreach ($cursoArchivos as $archivo) {
+                $nombreOriginal = $archivo['nombre_original'];
+                
+                // Skip if we've already added a version of this file
+                if (isset($addedFiles[$nombreOriginal])) {
+                    continue;
+                }
+                
                 $filePath = $uploadDir . $archivo['nombre_servidor'];
                 if (is_file($filePath)) {
                     $mimeType = 'application/octet-stream';
@@ -401,9 +412,12 @@ class ParticipantController extends BaseController {
                     }
                     $attachments[] = [
                         'path' => $filePath,
-                        'filename' => $archivo['nombre_original'],
+                        'filename' => $nombreOriginal,
                         'mime' => $mimeType
                     ];
+                    
+                    // Mark this filename as added
+                    $addedFiles[$nombreOriginal] = true;
                 }
             }
         }
