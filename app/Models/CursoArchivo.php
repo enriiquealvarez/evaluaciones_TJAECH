@@ -39,7 +39,53 @@ class CursoArchivo {
         $row = $stmt->fetch();
         return $row ?: null;
     }
-
+    public static function cleanupDuplicates(int $cursoId): int {
+        self::ensureSchema();
+        // Find all duplicates by nombre_original
+        $stmt = DB::conn()->prepare('
+            SELECT nombre_original, COUNT(*) as total
+            FROM curso_archivos
+            WHERE curso_id = ?
+            GROUP BY nombre_original
+            HAVING total > 1
+        ');
+        $stmt->execute([$cursoId]);
+        $duplicates = $stmt->fetchAll();
+        
+        $deletedCount = 0;
+        $uploadDir = __DIR__ . '/../../public/uploads/adjuntos/';
+        
+        foreach ($duplicates as $dup) {
+            // Get all versions of this file, ordered by date (newest first)
+            $stmt = DB::conn()->prepare('
+                SELECT id, nombre_servidor
+                FROM curso_archivos
+                WHERE curso_id = ? AND nombre_original = ?
+                ORDER BY created_at DESC
+            ');
+            $stmt->execute([$cursoId, $dup['nombre_original']]);
+            $files = $stmt->fetchAll();
+            
+            // Delete all but the first (latest) one
+            for ($i = 1; $i < count($files); $i++) {
+                $fileId = (int)$files[$i]['id'];
+                $filename = $files[$i]['nombre_servidor'];
+                
+                // Delete physical file
+                $filePath = $uploadDir . $filename;
+                if (is_file($filePath)) {
+                    @unlink($filePath);
+                }
+                
+                // Delete record
+                $deleteStmt = DB::conn()->prepare('DELETE FROM curso_archivos WHERE id = ?');
+                $deleteStmt->execute([$fileId]);
+                $deletedCount++;
+            }
+        }
+        
+        return $deletedCount;
+    }
     public static function create(int $cursoId, string $nombreOriginal, string $nombreServidor): int {
         self::ensureSchema();
         $stmt = DB::conn()->prepare(

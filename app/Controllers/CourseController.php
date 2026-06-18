@@ -192,6 +192,10 @@ class CourseController extends BaseController {
             'cupo_maximo' => (int)($_POST['cupo_maximo'] ?? 0),
             'documento_bases' => $documentoBases
         ]);
+        
+        // Clean up duplicate attachments
+        CursoArchivo::cleanupDuplicates($id);
+        
         Session::flash('success', 'Curso actualizado.');
         redirect('/admin/cursos');
     }
