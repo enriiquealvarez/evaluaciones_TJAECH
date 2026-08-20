@@ -346,15 +346,19 @@ class ParticipantController extends BaseController {
             'colectivos_json' => json_encode($colectivos, JSON_UNESCAPED_UNICODE)
         ]);
 
-        $this->sendParticipantRegistrationEmail($nombre, $correo, $curso, $telefono);
+        $mailSent = $this->sendParticipantRegistrationEmail($nombre, $correo, $curso, $telefono);
 
-        Session::flash('success', 'Registro al curso completado. Las indicaciones, recomendaciones y archivos adjuntos del curso fueron enviados a su correo electrónico. Cuando el curso tenga evaluación, podrá ingresar con su correo y número telefónico.');
+        if ($mailSent) {
+            Session::flash('success', 'Registro al curso completado. Las indicaciones, recomendaciones y archivos adjuntos del curso fueron enviados a su correo electrónico. Cuando el curso tenga evaluación, podrá ingresar con su correo y número telefónico.');
+        } else {
+            Session::flash('success', 'Registro al curso completado. No fue posible enviar el correo de confirmación en este momento; su registro quedó guardado correctamente. Cuando el curso tenga evaluación, podrá ingresar con su correo y número telefónico.');
+        }
         redirect('/curso/registro?curso_id=' . $cursoId);
     }
 
-    private function sendParticipantRegistrationEmail(string $name, string $email, array $curso, string $telefono): void {
+    private function sendParticipantRegistrationEmail(string $name, string $email, array $curso, string $telefono): bool {
         if ($email === '') {
-            return;
+            return false;
         }
 
         $attachments = [];
@@ -422,13 +426,31 @@ class ParticipantController extends BaseController {
                 $telefono
             );
             $text = "Hola {$name},\n\nTu registro al curso \"" . ($curso['nombre'] ?? 'Programa de capacitación') . "\" ha sido recibido exitosamente.\nAdjuntamos la información e indicaciones para tu participación, te sugerimos revisarla antes del curso.\n\nCorreo registrado: {$email}\nTeléfono registrado: {$telefono}\nContacto: ija@tjaech.gob.mx\n\nTribunal de Justicia Administrativa del Estado de Chiapas";
-            $mailer->send($email, $name, $subject, $html, $text, $attachments, [
+            $sent = $mailer->send($email, $name, $subject, $html, $text, $attachments, [
                 'from_name' => 'Instituto de Justicia Administrativa',
                 'reply_to_email' => 'ija@tjaech.gob.mx',
                 'reply_to_name' => 'Instituto de Justicia Administrativa',
             ]);
+
+            // If sending with attachments fails, retry without attachments so at least
+            // the participant receives registration confirmation.
+            if (!$sent && !empty($attachments)) {
+                $sent = $mailer->send($email, $name, $subject, $html, $text, [], [
+                    'from_name' => 'Instituto de Justicia Administrativa',
+                    'reply_to_email' => 'ija@tjaech.gob.mx',
+                    'reply_to_name' => 'Instituto de Justicia Administrativa',
+                ]);
+            }
+
+            if (!$sent) {
+                $cursoIdLog = (int)($curso['id'] ?? 0);
+                error_log("No se pudo enviar correo de registro. curso_id={$cursoIdLog}, email={$email}");
+            }
+
+            return $sent;
         } catch (Throwable $e) {
             error_log($e->getMessage());
+            return false;
         }
     }
 
