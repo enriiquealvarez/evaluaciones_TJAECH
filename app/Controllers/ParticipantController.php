@@ -419,13 +419,15 @@ class ParticipantController extends BaseController {
         try {
             $mailer = new Mailer();
             $subject = 'Confirmación de registro - Programa de capacitación TJAECH';
+            $tipoTexto = strtolower(Curso::TIPOS[$curso['tipo'] ?? 'curso'] ?? 'curso');
             $html = $this->buildParticipantRegistrationEmail(
                 $name,
                 (string)($curso['nombre'] ?? 'Programa de capacitación'),
                 $email,
-                $telefono
+                $telefono,
+                $tipoTexto
             );
-            $text = "Hola {$name},\n\nTu registro al curso \"" . ($curso['nombre'] ?? 'Programa de capacitación') . "\" ha sido recibido exitosamente.\nAdjuntamos la información e indicaciones para tu participación, te sugerimos revisarla antes del curso.\n\nCorreo registrado: {$email}\nTeléfono registrado: {$telefono}\nContacto: ija@tjaech.gob.mx\n\nTribunal de Justicia Administrativa del Estado de Chiapas";
+            $text = "Hola {$name},\n\nTu registro al {$tipoTexto} \"" . ($curso['nombre'] ?? 'Programa de capacitación') . "\" ha sido recibido exitosamente.\nAdjuntamos la información e indicaciones para tu participación, te sugerimos revisarla antes del {$tipoTexto}.\n\nCorreo registrado: {$email}\nTeléfono registrado: {$telefono}\nContacto: ija@tjaech.gob.mx\n\nTribunal de Justicia Administrativa del Estado de Chiapas";
             $sent = $mailer->send($email, $name, $subject, $html, $text, $attachments, [
                 'from_name' => 'Instituto de Justicia Administrativa',
                 'reply_to_email' => 'ija@tjaech.gob.mx',
@@ -454,11 +456,12 @@ class ParticipantController extends BaseController {
         }
     }
 
-    private function buildParticipantRegistrationEmail(string $name, string $courseName, string $email, string $telefono): string {
+    private function buildParticipantRegistrationEmail(string $name, string $courseName, string $email, string $telefono, string $tipoTexto = 'curso'): string {
         $safeName = e($name);
         $safeCourse = e($courseName);
         $safeEmail = e($email);
         $safeTelefono = e($telefono);
+        $safeTipo = e($tipoTexto);
 
         return <<<HTML
 <!doctype html>
@@ -483,8 +486,8 @@ class ParticipantController extends BaseController {
             <td style="padding:24px 24px 8px;">
               <h2 style="margin:0 0 8px 0;">Registro recibido correctamente</h2>
               <p style="margin:0 0 12px 0;">Hola {$safeName},</p>
-              <p style="margin:0 0 12px 0;">Tu registro al curso "<strong>{$safeCourse}</strong>" ha sido recibido exitosamente.</p>
-              <p style="margin:0 0 12px 0;">Adjuntamos a este correo la información e indicaciones correspondientes para tu participación, te sugerimos revisarlas antes del curso.</p>
+              <p style="margin:0 0 12px 0;">Tu registro al {$safeTipo} "<strong>{$safeCourse}</strong>" ha sido recibido exitosamente.</p>
+              <p style="margin:0 0 12px 0;">Adjuntamos a este correo la información e indicaciones correspondientes para tu participación, te sugerimos revisarlas antes del {$safeTipo}.</p>
             </td>
           </tr>
           <tr>

@@ -54,6 +54,7 @@ class CourseController extends BaseController {
 
         $cursoId = Curso::create([
             'nombre' => trim($_POST['nombre']),
+            'tipo' => in_array($_POST['tipo'] ?? '', array_keys(Curso::TIPOS), true) ? $_POST['tipo'] : 'curso',
             'descripcion' => trim($_POST['descripcion'] ?? ''),
             'fecha_inicio' => parseDate($_POST['fecha_inicio'] ?? ''),
             'fecha_fin' => parseDate($_POST['fecha_fin'] ?? ''),
@@ -185,6 +186,7 @@ class CourseController extends BaseController {
 
         Curso::update($id, [
             'nombre' => trim($_POST['nombre']),
+            'tipo' => in_array($_POST['tipo'] ?? '', array_keys(Curso::TIPOS), true) ? $_POST['tipo'] : 'curso',
             'descripcion' => trim($_POST['descripcion'] ?? ''),
             'fecha_inicio' => parseDate($_POST['fecha_inicio'] ?? ''),
             'fecha_fin' => parseDate($_POST['fecha_fin'] ?? ''),

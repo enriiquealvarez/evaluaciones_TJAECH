@@ -28,8 +28,15 @@ class Curso {
             DB::conn()->exec("ALTER TABLE cursos ADD COLUMN enviar_documento_bases TINYINT(1) NOT NULL DEFAULT 1 AFTER documento_bases");
         }
 
+        $colTipo = DB::conn()->query("SHOW COLUMNS FROM cursos LIKE 'tipo'")->fetch();
+        if (!$colTipo) {
+            DB::conn()->exec("ALTER TABLE cursos ADD COLUMN tipo VARCHAR(30) NOT NULL DEFAULT 'curso' AFTER nombre");
+        }
+
         $ready = true;
     }
+
+    public const TIPOS = ['curso' => 'Curso', 'taller' => 'Taller', 'curso-taller' => 'Curso-taller', 'diplomado' => 'Diplomado', 'seminario' => 'Seminario'];
 
     public static function allActive(): array {
         self::ensureSchema();
@@ -54,10 +61,11 @@ class Curso {
     public static function create(array $data): int {
         self::ensureSchema();
         $stmt = DB::conn()->prepare(
-            'INSERT INTO cursos (nombre, descripcion, fecha_inicio, fecha_fin, activo, terminado, tiene_cupo, cupo_maximo, documento_bases, enviar_documento_bases, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,NOW())'
+            'INSERT INTO cursos (nombre, tipo, descripcion, fecha_inicio, fecha_fin, activo, terminado, tiene_cupo, cupo_maximo, documento_bases, enviar_documento_bases, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,NOW())'
         );
         $stmt->execute([
             $data['nombre'],
+            $data['tipo'] ?? 'curso',
             $data['descripcion'],
             $data['fecha_inicio'],
             $data['fecha_fin'],
@@ -74,10 +82,11 @@ class Curso {
     public static function update(int $id, array $data): void {
         self::ensureSchema();
         $stmt = DB::conn()->prepare(
-            'UPDATE cursos SET nombre=?, descripcion=?, fecha_inicio=?, fecha_fin=?, activo=?, tiene_cupo=?, cupo_maximo=?, documento_bases=?, enviar_documento_bases=? WHERE id=?'
+            'UPDATE cursos SET nombre=?, tipo=?, descripcion=?, fecha_inicio=?, fecha_fin=?, activo=?, tiene_cupo=?, cupo_maximo=?, documento_bases=?, enviar_documento_bases=? WHERE id=?'
         );
         $stmt->execute([
             $data['nombre'],
+            $data['tipo'] ?? 'curso',
             $data['descripcion'],
             $data['fecha_inicio'],
             $data['fecha_fin'],

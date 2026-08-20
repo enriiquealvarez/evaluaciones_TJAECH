@@ -19,6 +19,15 @@
         <label>Nombre*
             <input type="text" name="nombre" required value="<?= e($old['nombre'] ?? ($curso['nombre'] ?? '')) ?>">
         </label>
+        <label>Tipo*
+            <?php $tipoActual = $old['tipo'] ?? ($curso['tipo'] ?? 'curso'); ?>
+            <select name="tipo" required>
+                <?php foreach (Curso::TIPOS as $valor => $etiqueta): ?>
+                    <option value="<?= e($valor) ?>" <?= $tipoActual === $valor ? 'selected' : '' ?>><?= e($etiqueta) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </label>
+        <p style="margin:-4px 0 12px;font-size:12px;color:#666;">Este valor se usa en el correo de confirmación de registro (ej. "Tu registro al <strong><?= e(strtolower(Curso::TIPOS[$tipoActual] ?? 'curso')) ?></strong>...").</p>
         <label>Descripción
             <textarea name="descripcion" rows="3"><?= e($old['descripcion'] ?? ($curso['descripcion'] ?? '')) ?></textarea>
         </label>

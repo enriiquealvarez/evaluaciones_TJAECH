@@ -40,6 +40,7 @@
                 <thead>
                     <tr>
                         <th>Nombre</th>
+                        <th>Tipo</th>
                         <th>Fechas</th>
                         <th>Estatus</th>
                         <th>Acciones</th>
@@ -63,6 +64,7 @@
                         data-status="<?= e($statusKey) ?>"
                         data-has-dates="<?= $hasDates ? '1' : '0' ?>">
                         <td><?= e($curso['nombre']) ?></td>
+                        <td><?= e(Curso::TIPOS[$curso['tipo'] ?? 'curso'] ?? 'Curso') ?></td>
                         <td><?= e($curso['fecha_inicio'] ?? 'N/D') ?> - <?= e($curso['fecha_fin'] ?? 'N/D') ?></td>
                         <td>
                             <span class="badge <?= $statusKey === 'activo' ? 'success' : ($statusKey === 'terminado' ? 'warning' : 'danger') ?>"><?= e($statusLabel) ?></span>
